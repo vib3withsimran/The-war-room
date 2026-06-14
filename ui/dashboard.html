@@ -237,13 +237,28 @@
         .confidence-fill {
             height: 100%;
             background: var(--sl-accent);
+            transition: width 1s var(--sl-ease);
         }
 
-        .empty-state {
-            text-align: center;
-            padding: var(--sl-sp-10) 0;
-            color: var(--sl-fg-muted);
-            font-style: italic;
+        /* Animation States */
+        .hidden { display: none !important; }
+        .fade-in {
+            animation: slFadeIn var(--sl-dur-med) var(--sl-ease) forwards;
+        }
+
+        @keyframes slFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pulse {
+            animation: slPulse 2s infinite;
+        }
+
+        @keyframes slPulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
@@ -255,7 +270,7 @@
             <div class="sidebar-header">Active Incidents</div>
             
             <div id="alert-list">
-                <div class="alert-card active">
+                <div id="sim-alert" class="alert-card active hidden">
                     <span class="severity-pill sev-high">High</span>
                     <h3>API Gateway Latency Spike</h3>
                     <p>P99 latency spiked to 2450ms on api-gateway service</p>
@@ -267,81 +282,119 @@
                     <p>Production RDS instance reaching 90% connection capacity</p>
                 </div>
             </div>
+
+            <div style="margin-top: auto; padding-top: var(--sl-sp-5); border-top: 1px solid var(--sl-line);">
+                <button id="start-sim" class="btn sl-nav" style="width: 100%; justify-content: center; background: var(--sl-surface-2);">
+                    RE-RUN SIMULATION
+                </button>
+            </div>
         </aside>
 
         <!-- Main Content: Incident Deep Dive -->
         <main class="main-view">
-            <div id="incident-detail">
+            <div id="incident-detail" class="hidden">
                 <header class="hero-section">
-                    <h1 class="incident-title">API Gateway<br>Latency Spike</h1>
+                    <h1 class="incident-title" id="main-title">API Gateway<br>Latency Spike</h1>
                     
                     <!-- The Slate Signature Overlap -->
-                    <div class="verdict-overlap">
-                        <div class="verdict-text">WARNING: Metrics anomaly detected without clear change correlation.</div>
-                        <ul class="action-list">
-                            <li class="action-item">Scale up resources</li>
-                            <li class="action-item">Inspect underlying infrastructure health</li>
+                    <div id="verdict-box" class="verdict-overlap hidden">
+                        <div class="verdict-text" id="verdict-content">...</div>
+                        <ul class="action-list" id="action-list">
+                            <!-- Actions injected here -->
                         </ul>
                     </div>
                 </header>
 
-                <div class="sidebar-header">Agent Findings</div>
-                <div class="findings-grid">
-                    <!-- Metrics Agent -->
-                    <div class="agent-card">
-                        <div class="agent-card-header">
-                            <span class="agent-name">Metrics Agent</span>
-                            <span class="agent-finding-type">Anomaly</span>
-                        </div>
-                        <p class="agent-summary">System severity is HIGH</p>
-                        <p class="agent-hypothesis">High latency detected across all nodes, likely resource contention.</p>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: 90%;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Logs Agent -->
-                    <div class="agent-card">
-                        <div class="agent-card-header">
-                            <span class="agent-name">Logs Agent</span>
-                            <span class="agent-finding-type">Observation</span>
-                        </div>
-                        <p class="agent-summary">No log errors detected</p>
-                        <p class="agent-hypothesis">Scanned 15k log lines, no 5xx or stack traces found.</p>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: 85%;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Change Agent -->
-                    <div class="agent-card">
-                        <div class="agent-card-header">
-                            <span class="agent-name">Change Agent</span>
-                            <span class="agent-finding-type">Observation</span>
-                        </div>
-                        <p class="agent-summary">No recent deploys</p>
-                        <p class="agent-hypothesis">Last deploy was 48h ago. No config changes in last 4h.</p>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: 70%;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Runbook Agent -->
-                    <div class="agent-card">
-                        <div class="agent-card-header">
-                            <span class="agent-name">Runbook Agent</span>
-                            <span class="agent-finding-type">Match</span>
-                        </div>
-                        <p class="agent-summary">Latency Playbook Found</p>
-                        <p class="agent-hypothesis">Suggested mitigation: resource scaling and pool audit.</p>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: 75%;"></div>
-                        </div>
-                    </div>
+                <div class="sidebar-header">Agent Findings <span id="agent-status" class="pulse" style="font-family: var(--sl-ff-mono); font-size: 10px; margin-left: 10px;">[POLLING...]</span></div>
+                <div class="findings-grid" id="findings-grid">
+                    <!-- Agents injected here -->
                 </div>
+            </div>
+
+            <div id="initial-state" class="empty-state">
+                <p>Waiting for incident alerts from Band SDK Foundry...</p>
             </div>
         </main>
     </div>
 
+    <script>
+        const agents = [
+            { id: 'metrics', name: 'Metrics Agent', type: 'Anomaly', summary: 'System severity is HIGH', hypothesis: 'High latency detected across all nodes, likely resource contention.', conf: 90 },
+            { id: 'logs', name: 'Logs Agent', type: 'Observation', summary: 'No log errors detected', hypothesis: 'Scanned 15k log lines, no 5xx or stack traces found.', conf: 85 },
+            { id: 'change', name: 'Change Agent', type: 'Observation', summary: 'No recent deploys', hypothesis: 'Last deploy was 48h ago. No config changes in last 4h.', conf: 70 },
+            { id: 'runbook', name: 'Runbook Agent', type: 'Match', summary: 'Latency Playbook Found', hypothesis: 'Suggested mitigation: resource scaling and pool audit.', conf: 75 }
+        ];
+
+        const verdict = {
+            text: "WARNING: Metrics anomaly detected without clear change correlation.",
+            actions: ["Scale up resources", "Inspect underlying infrastructure health"]
+        };
+
+        function runSimulation() {
+            // Reset UI
+            document.getElementById('initial-state').classList.add('hidden');
+            document.getElementById('incident-detail').classList.remove('hidden');
+            document.getElementById('sim-alert').classList.remove('hidden');
+            document.getElementById('sim-alert').classList.add('fade-in');
+            document.getElementById('findings-grid').innerHTML = '';
+            document.getElementById('verdict-box').classList.add('hidden');
+            document.getElementById('agent-status').classList.remove('hidden');
+
+            // 1. Staggered Agent Findings
+            agents.forEach((agent, index) => {
+                setTimeout(() => {
+                    const card = document.createElement('div');
+                    card.className = 'agent-card fade-in';
+                    card.innerHTML = `
+                        <div class="agent-card-header">
+                            <span class="agent-name">${agent.name}</span>
+                            <span class="agent-finding-type">${agent.type}</span>
+                        </div>
+                        <p class="agent-summary">${agent.summary}</p>
+                        <p class="agent-hypothesis">${agent.hypothesis}</p>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 0%;"></div>
+                        </div>
+                    `;
+                    document.getElementById('findings-grid').appendChild(card);
+                    
+                    // Animate confidence bar
+                    setTimeout(() => {
+                        card.querySelector('.confidence-fill').style.width = agent.conf + '%';
+                    }, 100);
+
+                    if (index === agents.length - 1) {
+                        finishTriage();
+                    }
+                }, (index + 1) * 1200);
+            });
+        }
+
+        function finishTriage() {
+            document.getElementById('agent-status').classList.add('hidden');
+            
+            // 2. Show Verdict Overlap
+            setTimeout(() => {
+                const vBox = document.getElementById('verdict-box');
+                vBox.classList.remove('hidden');
+                vBox.classList.add('fade-in');
+                document.getElementById('verdict-content').innerText = verdict.text;
+                
+                const aList = document.getElementById('action-list');
+                aList.innerHTML = '';
+                verdict.actions.forEach(act => {
+                    const li = document.createElement('li');
+                    li.className = 'action-item';
+                    li.innerText = act;
+                    aList.appendChild(li);
+                });
+            }, 1000);
+        }
+
+        document.getElementById('start-sim').addEventListener('click', runSimulation);
+        
+        // Auto-start on load
+        setTimeout(runSimulation, 1500);
+    </script>
 </body>
 </html>
