@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE WAR ROOM | Incident Response Dashboard</title>
+    
+    <!-- Google Fonts for Slate Design System -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Slate Core Assets -->
+    <link rel="stylesheet" href="assets/tokens.css">
+    <link rel="stylesheet" href="assets/components.css">
+    
+    <style>
+        /* Dashboard-specific Shell & Rhythm */
+        :root {
+            --sidebar-width: 320px;
+        }
+
+        .dashboard-shell {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar: Alert Feed */
+        .sidebar {
+            background: var(--sl-bg-dark);
+            border-right: var(--sl-bw-hair) solid var(--sl-line);
+            padding: var(--sl-sp-6);
+            display: flex;
+            flex-direction: column;
+            gap: var(--sl-sp-6);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            font-family: var(--sl-ff-display);
+            font-size: var(--sl-fs-h4);
+            text-transform: uppercase;
+            letter-spacing: var(--sl-tracking-label);
+            color: var(--sl-fg-muted);
+            margin-bottom: var(--sl-sp-4);
+        }
+
+        .alert-card {
+            background: var(--sl-surface);
+            border: var(--sl-bw-hair) solid var(--sl-line);
+            border-radius: var(--sl-r-lg);
+            padding: var(--sl-sp-5);
+            transition: all var(--sl-dur-fast) var(--sl-ease);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-card:hover {
+            background: var(--sl-surface-2);
+            border-color: var(--sl-line-hard);
+            transform: translateY(-2px);
+        }
+
+        .alert-card.active {
+            border-color: var(--sl-accent);
+            box-shadow: var(--sl-shadow-sm);
+        }
+
+        .alert-card .severity-pill {
+            display: inline-block;
+            padding: 2px var(--sl-sp-2);
+            border-radius: var(--sl-r-pill);
+            font-size: var(--sl-fs-micro);
+            font-weight: var(--sl-fw-bold);
+            text-transform: uppercase;
+            letter-spacing: var(--sl-tracking-label);
+            margin-bottom: var(--sl-sp-2);
+        }
+
+        .sev-critical { background: var(--sl-danger); color: white; }
+        .sev-high     { background: var(--sl-warning); color: var(--sl-accent-ink); }
+        .sev-medium   { background: var(--sl-bg-alt); color: var(--sl-fg); }
+
+        .alert-card h3 {
+            font-size: var(--sl-fs-h4);
+            margin: 0 0 var(--sl-sp-1) 0;
+            line-height: var(--sl-lh-tight);
+        }
+
+        .alert-card p {
+            font-size: var(--sl-fs-small);
+            color: var(--sl-fg-soft);
+            margin: 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Main View: Incident Context */
+        .main-view {
+            padding: var(--sl-sp-8) var(--sl-sp-9);
+            position: relative;
+        }
+
+        .hero-section {
+            position: relative;
+            margin-bottom: var(--sl-sp-9);
+        }
+
+        .incident-title {
+            font-family: var(--sl-ff-display);
+            font-size: var(--sl-fs-display-3);
+            line-height: var(--sl-lh-display);
+            text-transform: uppercase;
+            letter-spacing: var(--sl-tracking-display);
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* The Slate signature: The "Product" (Verdict) overlap */
+        .verdict-overlap {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-40%);
+            width: 440px;
+            background: var(--sl-fg);
+            color: var(--sl-accent-ink);
+            padding: var(--sl-sp-7);
+            border-radius: var(--sl-r-lg);
+            box-shadow: var(--sl-shadow-lg);
+            z-index: 10;
+        }
+
+        .verdict-overlap::before {
+            content: "COMMANDER VERDICT";
+            display: block;
+            font-size: var(--sl-fs-micro);
+            font-weight: var(--sl-fw-bold);
+            letter-spacing: var(--sl-tracking-label);
+            margin-bottom: var(--sl-sp-3);
+            opacity: 0.6;
+        }
+
+        .verdict-text {
+            font-size: var(--sl-fs-h3);
+            font-weight: var(--sl-fw-bold);
+            line-height: var(--sl-lh-tight);
+            margin-bottom: var(--sl-sp-5);
+        }
+
+        .action-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--sl-sp-2);
+        }
+
+        .action-item {
+            font-size: var(--sl-fs-body);
+            display: flex;
+            align-items: center;
+            gap: var(--sl-sp-3);
+            padding: var(--sl-sp-3) var(--sl-sp-4);
+            background: rgba(42, 42, 42, 0.05);
+            border-radius: var(--sl-r-pill);
+            border: 1px solid rgba(42, 42, 42, 0.1);
+        }
+
+        /* Agent Findings Grid */
+        .findings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--sl-sp-6);
+        }
+
+        .agent-card {
+            background: var(--sl-bg-alt);
+            border: var(--sl-bw-hair) solid var(--sl-line);
+            border-radius: var(--sl-r-lg);
+            padding: var(--sl-sp-6);
+            display: flex;
+            flex-direction: column;
+            gap: var(--sl-sp-4);
+        }
+
+        .agent-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .agent-name {
+            font-size: var(--sl-fs-micro);
+            font-weight: var(--sl-fw-bold);
+            text-transform: uppercase;
+            letter-spacing: var(--sl-tracking-label);
+            color: var(--sl-fg-muted);
+        }
+
+        .agent-finding-type {
+            font-size: var(--sl-fs-micro);
+            padding: 2px var(--sl-sp-2);
+            border: var(--sl-bw-hair) solid var(--sl-line-hard);
+            border-radius: var(--sl-r-pill);
+        }
+
+        .agent-summary {
+            font-size: var(--sl-fs-h4);
+            font-weight: var(--sl-fw-semibold);
+            margin: 0;
+        }
+
+        .agent-hypothesis {
+            font-size: var(--sl-fs-small);
+            color: var(--sl-fg-soft);
+            margin: 0;
+        }
+
+        .confidence-bar {
+            height: 4px;
+            background: var(--sl-bg);
+            border-radius: var(--sl-r-pill);
+            overflow: hidden;
+            margin-top: auto;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--sl-accent);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--sl-sp-10) 0;
+            color: var(--sl-fg-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="sl-body sl-grain">
+    
+    <div class="dashboard-shell">
+        <!-- Sidebar: Active Incidents -->
+        <aside class="sidebar">
+            <div class="sidebar-header">Active Incidents</div>
+            
+            <div id="alert-list">
+                <div class="alert-card active">
+                    <span class="severity-pill sev-high">High</span>
+                    <h3>API Gateway Latency Spike</h3>
+                    <p>P99 latency spiked to 2450ms on api-gateway service</p>
+                </div>
+                
+                <div class="alert-card">
+                    <span class="severity-pill sev-medium">Medium</span>
+                    <h3>DB Connection Pool Near Limit</h3>
+                    <p>Production RDS instance reaching 90% connection capacity</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content: Incident Deep Dive -->
+        <main class="main-view">
+            <div id="incident-detail">
+                <header class="hero-section">
+                    <h1 class="incident-title">API Gateway<br>Latency Spike</h1>
+                    
+                    <!-- The Slate Signature Overlap -->
+                    <div class="verdict-overlap">
+                        <div class="verdict-text">WARNING: Metrics anomaly detected without clear change correlation.</div>
+                        <ul class="action-list">
+                            <li class="action-item">Scale up resources</li>
+                            <li class="action-item">Inspect underlying infrastructure health</li>
+                        </ul>
+                    </div>
+                </header>
+
+                <div class="sidebar-header">Agent Findings</div>
+                <div class="findings-grid">
+                    <!-- Metrics Agent -->
+                    <div class="agent-card">
+                        <div class="agent-card-header">
+                            <span class="agent-name">Metrics Agent</span>
+                            <span class="agent-finding-type">Anomaly</span>
+                        </div>
+                        <p class="agent-summary">System severity is HIGH</p>
+                        <p class="agent-hypothesis">High latency detected across all nodes, likely resource contention.</p>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 90%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Logs Agent -->
+                    <div class="agent-card">
+                        <div class="agent-card-header">
+                            <span class="agent-name">Logs Agent</span>
+                            <span class="agent-finding-type">Observation</span>
+                        </div>
+                        <p class="agent-summary">No log errors detected</p>
+                        <p class="agent-hypothesis">Scanned 15k log lines, no 5xx or stack traces found.</p>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 85%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Change Agent -->
+                    <div class="agent-card">
+                        <div class="agent-card-header">
+                            <span class="agent-name">Change Agent</span>
+                            <span class="agent-finding-type">Observation</span>
+                        </div>
+                        <p class="agent-summary">No recent deploys</p>
+                        <p class="agent-hypothesis">Last deploy was 48h ago. No config changes in last 4h.</p>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 70%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Runbook Agent -->
+                    <div class="agent-card">
+                        <div class="agent-card-header">
+                            <span class="agent-name">Runbook Agent</span>
+                            <span class="agent-finding-type">Match</span>
+                        </div>
+                        <p class="agent-summary">Latency Playbook Found</p>
+                        <p class="agent-hypothesis">Suggested mitigation: resource scaling and pool audit.</p>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 75%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
