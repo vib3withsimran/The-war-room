@@ -3,398 +3,512 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE WAR ROOM | Incident Response Dashboard</title>
+    <title>THE WAR ROOM | Premium Incident Response</title>
     
-    <!-- Google Fonts for Slate Design System -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- Slate Core Assets -->
     <link rel="stylesheet" href="assets/tokens.css">
     <link rel="stylesheet" href="assets/components.css">
     
     <style>
-        /* Dashboard-specific Shell & Rhythm */
         :root {
-            --sidebar-width: 320px;
+            --sidebar-width: 360px;
+            --sl-accent: #7DC877; /* Use Success Green as accent for "Active/Safe" feel */
+            --glass: rgba(237, 237, 232, 0.03);
+            --glass-border: rgba(237, 237, 232, 0.08);
         }
 
         .dashboard-shell {
             display: grid;
             grid-template-columns: var(--sidebar-width) 1fr;
             min-height: 100vh;
+            background: radial-gradient(circle at 70% 30%, #4a4a4a 0%, var(--sl-bg) 70%);
         }
 
-        /* Sidebar: Alert Feed */
+        /* --- Sidebar & Navigation --- */
         .sidebar {
-            background: var(--sl-bg-dark);
-            border-right: var(--sl-bw-hair) solid var(--sl-line);
-            padding: var(--sl-sp-6);
+            background: rgba(42, 42, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--sl-line-strong);
+            padding: var(--sl-sp-7);
             display: flex;
             flex-direction: column;
-            gap: var(--sl-sp-6);
+            height: 100vh;
             position: sticky;
             top: 0;
-            height: 100vh;
-            overflow-y: auto;
+            z-index: 100;
         }
 
-        .sidebar-header {
+        .brand-logo {
             font-family: var(--sl-ff-display);
-            font-size: var(--sl-fs-h4);
+            font-size: var(--sl-fs-h3);
+            letter-spacing: var(--sl-tracking-display);
+            margin-bottom: var(--sl-sp-8);
+            display: flex;
+            align-items: center;
+            gap: var(--sl-sp-3);
+        }
+
+        .brand-logo .dot {
+            width: 12px;
+            height: 12px;
+            background: var(--sl-danger);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--sl-danger);
+        }
+
+        .nav-label {
+            font-size: var(--sl-fs-micro);
+            font-weight: var(--sl-fw-bold);
             text-transform: uppercase;
             letter-spacing: var(--sl-tracking-label);
             color: var(--sl-fg-muted);
             margin-bottom: var(--sl-sp-4);
         }
 
-        .alert-card {
-            background: var(--sl-surface);
-            border: var(--sl-bw-hair) solid var(--sl-line);
-            border-radius: var(--sl-r-lg);
+        .alert-item {
             padding: var(--sl-sp-5);
-            transition: all var(--sl-dur-fast) var(--sl-ease);
+            border-radius: var(--sl-r-lg);
+            border: 1px solid transparent;
+            margin-bottom: var(--sl-sp-3);
+            transition: all var(--sl-dur-med) var(--sl-ease);
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
         }
 
-        .alert-card:hover {
-            background: var(--sl-surface-2);
+        .alert-item:hover {
+            background: var(--glass);
+            border-color: var(--glass-border);
+        }
+
+        .alert-item.active {
+            background: var(--sl-surface);
             border-color: var(--sl-line-hard);
-            transform: translateY(-2px);
-        }
-
-        .alert-card.active {
-            border-color: var(--sl-accent);
             box-shadow: var(--sl-shadow-sm);
         }
 
-        .alert-card .severity-pill {
-            display: inline-block;
-            padding: 2px var(--sl-sp-2);
-            border-radius: var(--sl-r-pill);
-            font-size: var(--sl-fs-micro);
-            font-weight: var(--sl-fw-bold);
-            text-transform: uppercase;
-            letter-spacing: var(--sl-tracking-label);
+        .alert-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: var(--sl-sp-2);
         }
 
-        .sev-critical { background: var(--sl-danger); color: white; }
-        .sev-high     { background: var(--sl-warning); color: var(--sl-accent-ink); }
-        .sev-medium   { background: var(--sl-bg-alt); color: var(--sl-fg); }
-
-        .alert-card h3 {
-            font-size: var(--sl-fs-h4);
-            margin: 0 0 var(--sl-sp-1) 0;
-            line-height: var(--sl-lh-tight);
+        .sev-tag {
+            font-size: 10px;
+            font-weight: var(--sl-fw-bold);
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: var(--sl-r-pill);
         }
 
-        .alert-card p {
-            font-size: var(--sl-fs-small);
-            color: var(--sl-fg-soft);
-            margin: 0;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Main View: Incident Context */
+        /* --- Main Content --- */
         .main-view {
-            padding: var(--sl-sp-8) var(--sl-sp-9);
-            position: relative;
+            padding: var(--sl-sp-9) var(--sl-sp-10);
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
 
-        .hero-section {
-            position: relative;
-            margin-bottom: var(--sl-sp-9);
+        .incident-header {
+            margin-bottom: var(--sl-sp-10);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
-        .incident-title {
+        .title-group h1 {
             font-family: var(--sl-ff-display);
             font-size: var(--sl-fs-display-3);
-            line-height: var(--sl-lh-display);
+            line-height: 0.9;
             text-transform: uppercase;
-            letter-spacing: var(--sl-tracking-display);
             margin: 0;
-            position: relative;
-            z-index: 1;
+            color: var(--sl-fg);
         }
 
-        /* The Slate signature: The "Product" (Verdict) overlap */
-        .verdict-overlap {
-            position: absolute;
-            top: 50%;
-            right: 0;
-            transform: translateY(-40%);
-            width: 440px;
+        .incident-id {
+            font-family: var(--sl-ff-mono);
+            font-size: var(--sl-fs-small);
+            color: var(--sl-fg-muted);
+            margin-top: var(--sl-sp-2);
+        }
+
+        /* --- Verdict Section (Signature Overlap) --- */
+        .verdict-container {
+            position: relative;
+            margin-top: -40px;
+            margin-bottom: var(--sl-sp-10);
+        }
+
+        .verdict-card {
             background: var(--sl-fg);
             color: var(--sl-accent-ink);
-            padding: var(--sl-sp-7);
-            border-radius: var(--sl-r-lg);
+            padding: var(--sl-sp-8);
+            border-radius: var(--sl-r-xl);
             box-shadow: var(--sl-shadow-lg);
-            z-index: 10;
+            max-width: 600px;
+            transform: rotate(-1deg);
+            transition: transform 0.6s var(--sl-ease);
         }
 
-        .verdict-overlap::before {
-            content: "COMMANDER VERDICT";
-            display: block;
+        .verdict-card:hover {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        .verdict-title {
             font-size: var(--sl-fs-micro);
             font-weight: var(--sl-fw-bold);
             letter-spacing: var(--sl-tracking-label);
-            margin-bottom: var(--sl-sp-3);
-            opacity: 0.6;
+            text-transform: uppercase;
+            margin-bottom: var(--sl-sp-4);
+            color: rgba(0,0,0,0.4);
         }
 
-        .verdict-text {
+        .verdict-body {
             font-size: var(--sl-fs-h3);
             font-weight: var(--sl-fw-bold);
-            line-height: var(--sl-lh-tight);
-            margin-bottom: var(--sl-sp-5);
+            line-height: 1.2;
+            margin-bottom: var(--sl-sp-6);
         }
 
-        .action-list {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: var(--sl-sp-2);
-        }
-
-        .action-item {
-            font-size: var(--sl-fs-body);
-            display: flex;
+        .action-chip {
+            display: inline-flex;
             align-items: center;
-            gap: var(--sl-sp-3);
-            padding: var(--sl-sp-3) var(--sl-sp-4);
-            background: rgba(42, 42, 42, 0.05);
+            gap: 8px;
+            background: rgba(0,0,0,0.05);
+            padding: 8px 16px;
             border-radius: var(--sl-r-pill);
-            border: 1px solid rgba(42, 42, 42, 0.1);
+            font-size: var(--sl-fs-small);
+            font-weight: var(--sl-fw-semibold);
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(0,0,0,0.1);
         }
 
-        /* Agent Findings Grid */
-        .findings-grid {
+        /* --- Agent Grid --- */
+        .agent-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: var(--sl-sp-6);
         }
 
         .agent-card {
-            background: var(--sl-bg-alt);
-            border: var(--sl-bw-hair) solid var(--sl-line);
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
             border-radius: var(--sl-r-lg);
             padding: var(--sl-sp-6);
+            backdrop-filter: blur(10px);
+            transition: all var(--sl-dur-med) var(--sl-ease);
             display: flex;
             flex-direction: column;
             gap: var(--sl-sp-4);
         }
 
-        .agent-card-header {
+        .agent-card:hover {
+            border-color: var(--sl-line-hard);
+            background: rgba(237, 237, 232, 0.05);
+        }
+
+        .agent-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .agent-name {
-            font-size: var(--sl-fs-micro);
-            font-weight: var(--sl-fw-bold);
-            text-transform: uppercase;
-            letter-spacing: var(--sl-tracking-label);
-            color: var(--sl-fg-muted);
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .agent-finding-type {
-            font-size: var(--sl-fs-micro);
-            padding: 2px var(--sl-sp-2);
-            border: var(--sl-bw-hair) solid var(--sl-line-hard);
-            border-radius: var(--sl-r-pill);
+        .agent-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--sl-surface);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            font-family: var(--sl-ff-mono);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .agent-name-stack {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agent-role {
+            font-size: 10px;
+            color: var(--sl-fg-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .agent-name {
+            font-size: 14px;
+            font-weight: var(--sl-fw-bold);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--sl-fg-muted);
+        }
+
+        .status-active { background: var(--sl-success); box-shadow: 0 0 10px var(--sl-success); }
+
+        .agent-content {
+            flex-grow: 1;
         }
 
         .agent-summary {
-            font-size: var(--sl-fs-h4);
+            font-size: var(--sl-fs-body);
             font-weight: var(--sl-fw-semibold);
-            margin: 0;
+            margin-bottom: 4px;
         }
 
-        .agent-hypothesis {
+        .agent-detail {
             font-size: var(--sl-fs-small);
             color: var(--sl-fg-soft);
-            margin: 0;
+            line-height: 1.4;
         }
 
-        .confidence-bar {
+        .conf-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            font-weight: bold;
+            color: var(--sl-fg-muted);
+            margin-bottom: 4px;
+        }
+
+        .progress-track {
             height: 4px;
-            background: var(--sl-bg);
-            border-radius: var(--sl-r-pill);
+            background: rgba(237, 237, 232, 0.1);
+            border-radius: 2px;
             overflow: hidden;
-            margin-top: auto;
         }
 
-        .confidence-fill {
+        .progress-fill {
             height: 100%;
-            background: var(--sl-accent);
-            transition: width 1s var(--sl-ease);
+            background: var(--sl-fg);
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Animation States */
+        /* --- Animations & Utilities --- */
         .hidden { display: none !important; }
-        .fade-in {
-            animation: slFadeIn var(--sl-dur-med) var(--sl-ease) forwards;
+        .fade-up {
+            animation: fadeUp 0.8s var(--sl-ease) forwards;
+            opacity: 0;
         }
 
-        @keyframes slFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .pulse {
-            animation: slPulse 2s infinite;
+            animation: pulseGlow 2s infinite;
         }
 
-        @keyframes slPulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        @keyframes pulseGlow {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
+
+        /* --- Terminal Log --- */
+        .terminal {
+            margin-top: var(--sl-sp-8);
+            background: #1a1a1a;
+            border-radius: var(--sl-r-md);
+            padding: var(--sl-sp-5);
+            font-family: var(--sl-ff-mono);
+            font-size: 12px;
+            color: #a0a0a0;
+            border: 1px solid #333;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .terminal-line { margin-bottom: 4px; border-left: 2px solid transparent; padding-left: 8px; }
+        .log-info { border-color: var(--sl-success); color: #dcdcdc; }
+        .log-warn { border-color: var(--sl-warning); }
+        .log-crit { border-color: var(--sl-danger); color: white; }
     </style>
 </head>
 <body class="sl-body sl-grain">
     
     <div class="dashboard-shell">
-        <!-- Sidebar: Active Incidents -->
+        <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="sidebar-header">Active Incidents</div>
-            
-            <div id="alert-list">
-                <div id="sim-alert" class="alert-card active hidden">
-                    <span class="severity-pill sev-high">High</span>
-                    <h3>API Gateway Latency Spike</h3>
-                    <p>P99 latency spiked to 2450ms on api-gateway service</p>
-                </div>
-                
-                <div class="alert-card">
-                    <span class="severity-pill sev-medium">Medium</span>
-                    <h3>DB Connection Pool Near Limit</h3>
-                    <p>Production RDS instance reaching 90% connection capacity</p>
-                </div>
+            <div class="brand-logo">
+                <div class="dot"></div>
+                WAR ROOM
             </div>
 
-            <div style="margin-top: auto; padding-top: var(--sl-sp-5); border-top: 1px solid var(--sl-line);">
-                <button id="start-sim" class="btn sl-nav" style="width: 100%; justify-content: center; background: var(--sl-surface-2);">
-                    RE-RUN SIMULATION
+            <nav>
+                <div class="nav-label">Live Monitoring</div>
+                <div class="alert-item active">
+                    <div class="alert-meta">
+                        <span class="sev-tag sev-high" style="background: var(--sl-warning); color: black;">High Severity</span>
+                        <span style="font-size: 10px; color: var(--sl-fg-muted);">2m ago</span>
+                    </div>
+                    <div style="font-weight: bold;">API Gateway Latency</div>
+                </div>
+
+                <div class="alert-item">
+                    <div class="alert-meta">
+                        <span class="sev-tag sev-medium" style="background: #555;">Medium</span>
+                        <span style="font-size: 10px; color: var(--sl-fg-muted);">14m ago</span>
+                    </div>
+                    <div style="font-weight: bold;">DB Connection Pool</div>
+                </div>
+            </nav>
+
+            <div style="margin-top: auto;">
+                <button id="sim-btn" class="btn sl-nav" style="width: 100%; justify-content: center; background: var(--sl-surface);">
+                    START SIMULATION
                 </button>
             </div>
         </aside>
 
-        <!-- Main Content: Incident Deep Dive -->
+        <!-- Main View -->
         <main class="main-view">
-            <div id="incident-detail" class="hidden">
-                <header class="hero-section">
-                    <h1 class="incident-title" id="main-title">API Gateway<br>Latency Spike</h1>
-                    
-                    <!-- The Slate Signature Overlap -->
-                    <div id="verdict-box" class="verdict-overlap hidden">
-                        <div class="verdict-text" id="verdict-content">...</div>
-                        <ul class="action-list" id="action-list">
-                            <!-- Actions injected here -->
-                        </ul>
-                    </div>
-                </header>
-
-                <div class="sidebar-header">Agent Findings <span id="agent-status" class="pulse" style="font-family: var(--sl-ff-mono); font-size: 10px; margin-left: 10px;">[POLLING...]</span></div>
-                <div class="findings-grid" id="findings-grid">
-                    <!-- Agents injected here -->
-                </div>
+            <div id="welcome-screen" class="empty-state" style="padding: 100px 0;">
+                <h2 style="font-family: var(--sl-ff-display); font-size: 40px; margin-bottom: 20px;">READY FOR TRIAGE</h2>
+                <p>Waiting for Band SDK event stream... Click "START SIMULATION" to begin.</p>
             </div>
 
-            <div id="initial-state" class="empty-state">
-                <p>Waiting for incident alerts from Band SDK Foundry...</p>
+            <div id="incident-room" class="hidden">
+                <div class="incident-header">
+                    <div class="title-group">
+                        <h1 id="dyn-title">API GATEWAY<br>LATENCY SPIKE</h1>
+                        <div class="incident-id" id="dyn-id">INCIDENT: INC-7E1E2509</div>
+                    </div>
+                    <div class="pulse" style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--sl-warning);">
+                        <div class="status-dot status-active" style="background: var(--sl-warning);"></div>
+                        TRIAGE IN PROGRESS
+                    </div>
+                </div>
+
+                <!-- Verdict Overlap -->
+                <div class="verdict-container">
+                    <div id="verdict-card" class="verdict-card hidden">
+                        <div class="verdict-title">Automated Verdict</div>
+                        <div class="verdict-body" id="verdict-text">Synthesis of cross-domain findings...</div>
+                        <div id="action-chips"></div>
+                    </div>
+                </div>
+
+                <div class="nav-label" style="margin-bottom: var(--sl-sp-6);">Agent Collaboration Layer</div>
+                <div class="agent-grid" id="agent-grid">
+                    <!-- Agent Cards will be injected here -->
+                </div>
+
+                <div class="terminal" id="terminal-log">
+                    <div class="terminal-line log-info">Foundry Band SDK initialized. Listening for #incident-events...</div>
+                </div>
             </div>
         </main>
     </div>
 
     <script>
         const agents = [
-            { id: 'metrics', name: 'Metrics Agent', type: 'Anomaly', summary: 'System severity is HIGH', hypothesis: 'High latency detected across all nodes, likely resource contention.', conf: 90 },
-            { id: 'logs', name: 'Logs Agent', type: 'Observation', summary: 'No log errors detected', hypothesis: 'Scanned 15k log lines, no 5xx or stack traces found.', conf: 85 },
-            { id: 'change', name: 'Change Agent', type: 'Observation', summary: 'No recent deploys', hypothesis: 'Last deploy was 48h ago. No config changes in last 4h.', conf: 70 },
-            { id: 'runbook', name: 'Runbook Agent', type: 'Match', summary: 'Latency Playbook Found', hypothesis: 'Suggested mitigation: resource scaling and pool audit.', conf: 75 }
+            { id: 'M', name: 'Metrics', role: 'Telemetry', summary: 'Anomaly Detected', detail: 'P99 latency spiked to 2450ms across us-east-1a nodes.', conf: 92 },
+            { id: 'L', name: 'Logs', role: 'Exceptions', summary: 'No Errors Found', detail: 'Analyzed 15,000 lines of app-tier logs. No stack traces.', conf: 88 },
+            { id: 'C', name: 'Change', role: 'CI/CD Audit', summary: 'System Baseline Stable', detail: 'No deployments or config changes detected in last 6 hours.', conf: 75 },
+            { id: 'R', name: 'Runbook', role: 'Knowledge Base', summary: 'Matching Playbook', detail: 'Correlation with "High Latency - Infrastructure Pool" runsheet.', conf: 81 }
         ];
 
-        const verdict = {
-            text: "WARNING: Metrics anomaly detected without clear change correlation.",
-            actions: ["Scale up resources", "Inspect underlying infrastructure health"]
-        };
+        const logLines = [
+            { t: 0, msg: "[Band] #incident-events -> alert-001 received", type: 'info' },
+            { t: 500, msg: "[Commander] Creating incident context inc-7e1e2509", type: 'info' },
+            { t: 1000, msg: "[Commander] Fanning out TriageTask to @metrics-agent", type: 'info' },
+            { t: 1200, msg: "[Commander] Fanning out TriageTask to @logs-agent", type: 'info' },
+            { t: 3000, msg: "[Metrics] Published #triage-findings: ANOMALY", type: 'warn' },
+            { t: 4500, msg: "[Logs] Published #triage-findings: OBSERVATION", type: 'info' },
+            { t: 6000, msg: "[Commander] Synthesizing 4/4 reports...", type: 'info' },
+            { t: 7500, msg: "[Commander] VERDICT: WARNING - Resource Scaling Required", type: 'crit' }
+        ];
 
-        function runSimulation() {
-            // Reset UI
-            document.getElementById('initial-state').classList.add('hidden');
-            document.getElementById('incident-detail').classList.remove('hidden');
-            document.getElementById('sim-alert').classList.remove('hidden');
-            document.getElementById('sim-alert').classList.add('fade-in');
-            document.getElementById('findings-grid').innerHTML = '';
-            document.getElementById('verdict-box').classList.add('hidden');
-            document.getElementById('agent-status').classList.remove('hidden');
+        function runSim() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('incident-room').classList.remove('hidden');
+            document.getElementById('agent-grid').innerHTML = '';
+            document.getElementById('verdict-card').classList.add('hidden');
+            document.getElementById('terminal-log').innerHTML = '';
 
-            // 1. Staggered Agent Findings
-            agents.forEach((agent, index) => {
+            // Add logs
+            logLines.forEach(line => {
+                setTimeout(() => {
+                    const l = document.createElement('div');
+                    l.className = `terminal-line log-${line.type}`;
+                    l.innerText = line.msg;
+                    const term = document.getElementById('terminal-log');
+                    term.appendChild(l);
+                    term.scrollTop = term.scrollHeight;
+                }, line.t);
+            });
+
+            // Add Agent Cards
+            agents.forEach((agent, i) => {
                 setTimeout(() => {
                     const card = document.createElement('div');
-                    card.className = 'agent-card fade-in';
+                    card.className = 'agent-card fade-up';
                     card.innerHTML = `
-                        <div class="agent-card-header">
-                            <span class="agent-name">${agent.name}</span>
-                            <span class="agent-finding-type">${agent.type}</span>
+                        <div class="agent-header">
+                            <div class="agent-info">
+                                <div class="agent-icon">${agent.id}</div>
+                                <div class="agent-name-stack">
+                                    <span class="agent-role">${agent.role}</span>
+                                    <span class="agent-name">${agent.name} Agent</span>
+                                </div>
+                            </div>
+                            <div class="status-dot status-active"></div>
                         </div>
-                        <p class="agent-summary">${agent.summary}</p>
-                        <p class="agent-hypothesis">${agent.hypothesis}</p>
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: 0%;"></div>
+                        <div class="agent-content">
+                            <div class="agent-summary">${agent.summary}</div>
+                            <div class="agent-detail">${agent.detail}</div>
+                        </div>
+                        <div>
+                            <div class="conf-label"><span>CONFIDENCE</span><span>${agent.conf}%</span></div>
+                            <div class="progress-track"><div class="progress-fill" style="width: 0%"></div></div>
                         </div>
                     `;
-                    document.getElementById('findings-grid').appendChild(card);
-                    
-                    // Animate confidence bar
+                    document.getElementById('agent-grid').appendChild(card);
                     setTimeout(() => {
-                        card.querySelector('.confidence-fill').style.width = agent.conf + '%';
+                        card.querySelector('.progress-fill').style.width = agent.conf + '%';
                     }, 100);
 
-                    if (index === agents.length - 1) {
-                        finishTriage();
-                    }
-                }, (index + 1) * 1200);
+                    if (i === agents.length - 1) showVerdict();
+                }, 1500 + (i * 1200));
             });
         }
 
-        function finishTriage() {
-            document.getElementById('agent-status').classList.add('hidden');
-            
-            // 2. Show Verdict Overlap
+        function showVerdict() {
             setTimeout(() => {
-                const vBox = document.getElementById('verdict-box');
-                vBox.classList.remove('hidden');
-                vBox.classList.add('fade-in');
-                document.getElementById('verdict-content').innerText = verdict.text;
+                const card = document.getElementById('verdict-card');
+                card.classList.remove('hidden');
+                card.classList.add('fade-up');
+                document.getElementById('verdict-text').innerText = "WARNING: Metrics anomaly detected without clear change correlation.";
                 
-                const aList = document.getElementById('action-list');
-                aList.innerHTML = '';
-                verdict.actions.forEach(act => {
-                    const li = document.createElement('li');
-                    li.className = 'action-item';
-                    li.innerText = act;
-                    aList.appendChild(li);
+                const chips = document.getElementById('action-chips');
+                chips.innerHTML = '';
+                ["Scale up resources", "Inspect Infrastructure"].forEach(act => {
+                    const c = document.createElement('span');
+                    c.className = 'action-chip';
+                    c.innerHTML = `⚡ ${act}`;
+                    chips.appendChild(c);
                 });
             }, 1000);
         }
 
-        document.getElementById('start-sim').addEventListener('click', runSimulation);
-        
-        // Auto-start on load
-        setTimeout(runSimulation, 1500);
+        document.getElementById('sim-btn').addEventListener('click', runSim);
     </script>
 </body>
 </html>
