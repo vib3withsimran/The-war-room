@@ -77,6 +77,10 @@ class TestComputeConfidence:
         deliberation = {"agreed": 5, "challenged": 1, "connected": 5, "surfaced": 0}
         assert scorer.compute_confidence(findings, deliberation) == 1.0
 
+    def test_deliberation_alone_without_findings_is_zero(self):
+        deliberation = {"agreed": 1, "challenged": 1, "connected": 1, "surfaced": 1}
+        assert scorer.compute_confidence([], deliberation) == 0.0
+
 
 class TestGate:
     def test_high_confidence_is_resolved(self):

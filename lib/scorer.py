@@ -52,6 +52,11 @@ def compute_confidence(findings: List[Finding], deliberation_summary: Optional[D
         weighted_sum += finding.confidence * weight
         weight_total += weight
 
+    # Deliberation alone can never produce a confidence score — without at least
+    # one weighted finding there is no agent evidence behind the verdict.
+    if weight_total == 0.0:
+        return 0.0
+
     # Deliberation only contributes its weight slot when it actually happened —
     # otherwise it would dilute the average as if it were a confirmed zero-confidence input.
     if any(deliberation_summary.values()):

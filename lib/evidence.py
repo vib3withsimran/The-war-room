@@ -18,14 +18,14 @@ class EvidenceStore:
     def get_evidence(self, evidence_id: str) -> Optional[Evidence]:
         return self._store.get(evidence_id)
 
-    def store(self, incident_id: str, agent: str, type: str, content: Any) -> Evidence:
+    def store(self, incident_id: str, agent: str, evidence_type: str, content: Any) -> Evidence:
         """Create, persist, and return a new Evidence record for an incident."""
         prefix = AGENT_PREFIXES.get(agent, DEFAULT_PREFIX)
         record = Evidence(
             id=self.generate_id(prefix),
             incident_id=incident_id,
             agent=agent,
-            type=type,
+            type=evidence_type,
             content=content,
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
