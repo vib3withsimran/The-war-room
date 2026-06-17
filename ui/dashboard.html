@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WAR ROOM | Studio Dashboard</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --bg: #F9FAFB;
@@ -23,6 +23,11 @@
             --radius: 12px;
             --font-sans: 'Inter', -apple-system, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+
+            /* severity / status palettes */
+            --red-bg: #FEE2E2; --red-fg: #991B1B;
+            --amber-bg: #FEF3C7; --amber-fg: #92400E;
+            --green-bg: #D1FAE5; --green-fg: #065F46;
         }
 
         * { box-sizing: border-box; }
@@ -40,22 +45,23 @@
 
         /* --- Sidebar --- */
         .sidebar {
-            width: 300px;
+            width: 320px;
             background: var(--surface);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             padding: 32px 24px;
+            overflow-y: auto;
         }
 
         .logo {
-            font-weight: 700;
+            font-weight: 800;
             font-size: 18px;
             letter-spacing: -0.02em;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 48px;
+            margin-bottom: 40px;
         }
 
         .logo-icon {
@@ -65,7 +71,7 @@
             border-radius: 6px;
         }
 
-        .nav-group { margin-bottom: 32px; }
+        .nav-group { margin-bottom: 28px; }
         .nav-label {
             font-size: 12px;
             font-weight: 600;
@@ -76,151 +82,137 @@
         }
 
         .alert-item {
-            padding: 12px 16px;
+            padding: 14px 16px;
             border-radius: var(--radius);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.2s;
-            border: 1px solid transparent;
+            border: 1px solid var(--border);
+            background: var(--surface);
         }
 
         .alert-item.active {
             background: var(--accent-soft);
-            color: var(--accent);
-            border-color: rgba(37, 99, 235, 0.1);
+            border-color: rgba(37, 99, 235, 0.35);
+            box-shadow: var(--shadow);
         }
 
-        .alert-item:not(.active):hover {
-            background: #F3F4F6;
-        }
+        .alert-item:not(.active):hover { background: #F3F4F6; }
 
+        .alert-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
         .alert-title { font-size: 14px; font-weight: 600; }
-        .alert-meta { font-size: 12px; color: var(--fg-muted); margin-top: 4px; }
+        .alert-meta { font-size: 12px; color: var(--fg-muted); margin-top: 6px; font-family: var(--font-mono); }
+
+        /* severity badge */
+        .sev-badge {
+            font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
+            letter-spacing: 0.03em; white-space: nowrap;
+        }
+        .sev-badge.sev-1 { background: var(--red-bg); color: var(--red-fg); }
+        .sev-badge.sev-2 { background: var(--amber-bg); color: var(--amber-fg); }
+        .sev-badge.sev-3 { background: var(--green-bg); color: var(--green-fg); }
 
         /* --- Main Content --- */
-        .main {
-            flex: 1;
-            padding: 64px 80px;
-            overflow-y: auto;
-        }
-
-        .header {
-            max-width: 900px;
-            margin-bottom: 48px;
-        }
+        .main { flex: 1; padding: 56px 72px; overflow-y: auto; }
+        .header { max-width: 920px; margin-bottom: 36px; }
 
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            background: #FEF3C7;
-            color: #92400E;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 99px;
-            margin-bottom: 16px;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; font-size: 12px; font-weight: 600;
+            border-radius: 99px; margin-bottom: 16px;
+            background: var(--amber-bg); color: var(--amber-fg);
         }
-
+        .status-badge.resolved { background: var(--green-bg); color: var(--green-fg); }
+        .status-badge.mitigating { background: var(--amber-bg); color: var(--amber-fg); }
+        .status-badge.escalated { background: var(--red-bg); color: var(--red-fg); }
         .status-dot { width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
 
-        h1 {
-            font-size: 36px;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            margin: 0 0 16px 0;
-            color: #111827;
-        }
-
-        .description {
-            font-size: 16px;
-            color: var(--fg-muted);
-            line-height: 1.5;
-            max-width: 600px;
-        }
+        .title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        h1 { font-size: 34px; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 14px 0; color: #111827; }
+        .description { font-size: 16px; color: var(--fg-muted); line-height: 1.5; max-width: 640px; }
+        .meta-line { font-size: 13px; color: var(--fg-muted); font-family: var(--font-mono); margin-top: 10px; }
 
         /* --- Verdict Card --- */
         .verdict-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 48px;
-            max-width: 900px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 20px; padding: 36px; box-shadow: var(--shadow-lg);
+            margin-bottom: 36px; max-width: 920px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 36px;
         }
-
-        .verdict-main h2 { font-size: 14px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
-        .verdict-content { font-size: 20px; font-weight: 600; line-height: 1.4; color: var(--fg); }
+        .verdict-main h2, .verdict-side h2 {
+            font-size: 13px; color: var(--fg-muted); text-transform: uppercase;
+            letter-spacing: 0.1em; margin: 0 0 14px 0;
+        }
+        .verdict-content { font-size: 19px; font-weight: 600; line-height: 1.45; color: var(--fg); }
+        .verdict-rootcause { font-size: 14px; color: var(--fg-muted); line-height: 1.5; margin-top: 16px; }
+        .verdict-confidence { font-size: 13px; font-family: var(--font-mono); color: var(--fg-muted); margin-top: 16px; }
 
         .action-list { list-style: none; padding: 0; margin: 0; }
         .action-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            background: #F9FAFB;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 500;
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            background: #F9FAFB; border: 1px solid var(--border); border-radius: 10px;
+            margin-bottom: 8px; font-size: 14px; font-weight: 500;
+        }
+        .action-item .arrow { color: var(--accent); font-weight: 700; }
+
+        .section-label {
+            font-size: 13px; color: var(--fg-muted); text-transform: uppercase;
+            letter-spacing: 0.1em; margin: 0 0 18px 0; font-weight: 600; max-width: 920px;
         }
 
         /* --- Agent Grid --- */
         .agent-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-            max-width: 900px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px; max-width: 920px; margin-bottom: 40px;
         }
-
         .agent-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 22px;
             transition: transform 0.2s, box-shadow 0.2s;
         }
-
         .agent-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
-
-        .agent-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
+        .agent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .agent-name { font-size: 12px; font-weight: 700; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+        .finding-type {
+            font-size: 11px; font-family: var(--font-mono); padding: 2px 8px;
+            border-radius: 6px; background: #F3F4F6; color: var(--fg-muted);
         }
-
-        .agent-name { font-size: 12px; font-weight: 600; color: var(--fg-muted); text-transform: uppercase; }
-        .agent-status { font-size: 12px; font-weight: 600; color: var(--accent); }
-
-        .agent-summary { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-        .agent-detail { font-size: 14px; color: var(--fg-muted); line-height: 1.5; margin-bottom: 20px; }
-
+        .finding-type.alarm { background: var(--red-bg); color: var(--red-fg); }
+        .finding-type.warn { background: var(--amber-bg); color: var(--amber-fg); }
+        .agent-summary { font-size: 17px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.01em; }
+        .agent-detail { font-size: 13px; color: var(--fg-muted); line-height: 1.5; margin-bottom: 18px; font-family: var(--font-mono); word-break: break-word; }
+        .progress-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--fg-muted); margin-bottom: 6px; }
         .progress-bar { height: 6px; background: #F3F4F6; border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 1s ease-out; }
+        .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.9s ease-out; }
 
-        /* --- Animations --- */
+        /* --- Deliberation feed --- */
+        .delib-panel {
+            background: #0F172A; border-radius: 16px; padding: 24px; max-width: 920px;
+            margin-bottom: 40px; box-shadow: var(--shadow-lg);
+        }
+        .delib-panel h2 { color: #94A3B8; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 16px 0; }
+        .delib-msg { font-family: var(--font-mono); font-size: 13px; color: #E2E8F0; line-height: 1.5; margin-bottom: 10px; }
+        .delib-msg .who { color: #38BDF8; font-weight: 500; }
+        .delib-msg.metrics .who { color: #4ADE80; }
+        .delib-msg.logs .who { color: #FACC15; }
+        .delib-msg.change .who { color: #38BDF8; }
+        .delib-msg.runbook .who { color: #C084FC; }
+
+        /* --- Animations / utilities --- */
         .hidden { display: none !important; }
         .fade-in { animation: fadeIn 0.6s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         button.btn-primary {
-            background: var(--fg);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: auto;
+            background: var(--fg); color: white; border: none; padding: 13px 24px;
+            border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+            margin-top: 8px; width: 100%; font-size: 14px;
         }
-
         button.btn-primary:hover { background: #000; }
+        button.btn-primary:disabled { background: #9CA3AF; cursor: not-allowed; }
+
+        .empty-hint { color: #9CA3AF; font-size: 15px; max-width: 920px; }
+        .error-banner { color: var(--red-fg); background: var(--red-bg); padding: 16px 20px; border-radius: 12px; max-width: 920px; }
     </style>
 </head>
 <body>
@@ -233,118 +225,242 @@
         </div>
 
         <div class="nav-group">
-            <div class="nav-label">Live Incidents</div>
-            <div id="alert-list">
-                <div class="alert-item active">
-                    <div class="alert-title">API Latency Spike</div>
-                    <div class="alert-meta">Active now • US-East-1</div>
-                </div>
-                <div class="alert-item">
-                    <div class="alert-title">DB Pool Warning</div>
-                    <div class="alert-meta">12m ago • us-east-1b</div>
-                </div>
-            </div>
+            <div class="nav-label">Incident Scenarios</div>
+            <div id="scenario-list"><!-- rendered from WAR_ROOM_SCENARIOS --></div>
         </div>
 
-        <button id="run-sim" class="btn-primary">Execute Triage</button>
+        <button id="run-sim" class="btn-primary">▶ Execute Triage</button>
+        <div class="nav-label" style="margin-top:24px;">Coordinated via Band</div>
     </aside>
 
     <!-- MAIN -->
     <main class="main">
-        <div id="welcome" style="text-align: center; margin-top: 100px;">
-            <h1 style="color: #E5E7EB; font-size: 48px;">Systems Ready</h1>
-            <p style="color: #9CA3AF;">Select an incident and run triage to begin analysis.</p>
-        </div>
-
-        <div id="incident-room" class="hidden">
+        <div id="incident-room">
             <div class="header fade-in">
-                <div class="status-badge" id="status-badge">
-                    <div class="status-dot"></div>
-                    <span>Triage in Progress</span>
+                <div class="title-row">
+                    <div class="status-badge" id="status-badge">
+                        <div class="status-dot"></div>
+                        <span id="status-text">Ready</span>
+                    </div>
+                    <span class="sev-badge" id="header-sev"></span>
                 </div>
-                <h1>API Gateway Latency Spike</h1>
-                <p class="description">Latency detected across all production clusters. Ingesting Band SDK findings in real-time.</p>
+                <h1 id="incident-title">Select an incident</h1>
+                <p class="description" id="incident-desc"></p>
+                <div class="meta-line" id="incident-meta"></div>
             </div>
 
             <div id="verdict-section" class="verdict-card hidden">
                 <div class="verdict-main">
                     <h2>Resolution Strategy</h2>
-                    <div class="verdict-content" id="verdict-msg">Synthesizing reports...</div>
+                    <div class="verdict-content" id="verdict-msg"></div>
+                    <div class="verdict-rootcause" id="verdict-rootcause"></div>
+                    <div class="verdict-confidence" id="verdict-confidence"></div>
                 </div>
-                <div>
+                <div class="verdict-side">
                     <h2>Recommended Actions</h2>
-                    <div id="action-list"></div>
+                    <div id="action-list" class="action-list"></div>
                 </div>
             </div>
 
+            <div id="agents-label" class="section-label hidden">Agent Triage — live findings on #triage-findings</div>
             <div class="agent-grid" id="agent-grid">
-                <!-- Agents -->
+                <div class="empty-hint" id="grid-hint">Press <strong>Execute Triage</strong> to dispatch the agent band.</div>
+            </div>
+
+            <div id="delib-section" class="delib-panel hidden">
+                <h2>#deliberation — agent cross-talk</h2>
+                <div id="delib-list"></div>
+            </div>
+        </div>
+
+        <div id="boot-error" class="hidden">
+            <div class="error-banner">
+                Could not load <code>scenarios.js</code>. Generate it first:
+                <code>python demo/gen_dashboard_data.py</code>
             </div>
         </div>
     </main>
 
+    <!-- Real pipeline output, generated by demo/gen_dashboard_data.py -->
+    <script src="scenarios.js"></script>
     <script>
-        const agents = [
-            { name: 'Metrics', summary: 'Anomaly Detected', detail: 'P99 latency at 2450ms. CPU usage normal across nodes.', conf: 92 },
-            { name: 'Logs', summary: 'No Errors Found', detail: 'Analyzed 15k log lines. No 5xx or stack traces detected.', conf: 88 },
-            { name: 'Change', summary: 'No Recent Deploys', detail: 'Last release was 48h ago. No config changes detected.', conf: 75 },
-            { name: 'Runbook', summary: 'Playbook Matched', detail: 'Correlation with "High Latency - Resource Scaling" guide.', conf: 81 }
-        ];
+        const DATA = window.WAR_ROOM_SCENARIOS;
+        let activeId = null;
 
-        function runSim() {
-            document.getElementById('welcome').classList.add('hidden');
-            document.getElementById('incident-room').classList.remove('hidden');
-            document.getElementById('agent-grid').innerHTML = '';
-            document.getElementById('verdict-section').classList.add('hidden');
-            document.getElementById('status-badge').style.background = '#FEF3C7';
-            document.getElementById('status-badge').style.color = '#92400E';
-            document.getElementById('status-badge').querySelector('span').innerText = 'Triage in Progress';
+        // finding types that should read as alarming vs cautionary
+        const ALARM_TYPES = new Set(["anomaly", "log_anomaly", "change_correlation"]);
+        const WARN_TYPES = new Set(["runbook_match", "observation", "log_observation"]);
 
-            agents.forEach((a, i) => {
-                setTimeout(() => {
-                    const card = document.createElement('div');
-                    card.className = 'agent-card fade-in';
-                    card.innerHTML = `
-                        <div class="agent-header">
-                            <span class="agent-name">${a.name} Agent</span>
-                            <span class="agent-status">Analysis Complete</span>
-                        </div>
-                        <div class="agent-summary">${a.summary}</div>
-                        <div class="agent-detail">${a.detail}</div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: 0%"></div></div>
-                    `;
-                    document.getElementById('agent-grid').appendChild(card);
-                    setTimeout(() => {
-                        card.querySelector('.progress-fill').style.width = a.conf + '%';
-                    }, 100);
-
-                    if (i === agents.length - 1) setTimeout(showVerdict, 1000);
-                }, i * 1000);
-            });
+        function el(tag, className, text) {
+            const node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text !== undefined) node.textContent = text;
+            return node;
         }
 
-        function showVerdict() {
-            const v = document.getElementById('verdict-section');
-            v.classList.remove('hidden');
-            v.classList.add('fade-in');
-            document.getElementById('verdict-msg').innerText = "Infrastructure scaling required. No code-level regressions detected.";
-            
-            document.getElementById('status-badge').style.background = '#D1FAE5';
-            document.getElementById('status-badge').style.color = '#065F46';
-            document.getElementById('status-badge').querySelector('span').innerText = 'Resolution Formulated';
-
-            const actions = ["Scale up API-Tier x4", "Inspect DB connection pool", "Notify SRE On-call"];
-            const list = document.getElementById('action-list');
+        function renderSidebar() {
+            const list = document.getElementById('scenario-list');
             list.innerHTML = '';
-            actions.forEach(act => {
-                const item = document.createElement('div');
-                item.className = 'action-item';
-                item.innerHTML = `<span>→</span> ${act}`;
+            DATA.order.forEach(id => {
+                const s = DATA.scenarios[id];
+                const item = el('div', 'alert-item');
+                item.dataset.id = id;
+
+                const row = el('div', 'alert-row');
+                row.appendChild(el('div', 'alert-title', s.title));
+                row.appendChild(el('span', 'sev-badge ' + s.sevClass, s.sevLabel));
+                item.appendChild(row);
+                item.appendChild(el('div', 'alert-meta', s.service + ' • ' + s.timeWindow));
+
+                item.addEventListener('click', () => selectScenario(id, true));
                 list.appendChild(item);
             });
         }
 
-        document.getElementById('run-sim').addEventListener('click', runSim);
+        function markActive(id) {
+            document.querySelectorAll('.alert-item').forEach(node => {
+                node.classList.toggle('active', node.dataset.id === id);
+            });
+        }
+
+        function renderHeader(s) {
+            document.getElementById('incident-title').textContent = s.title;
+            document.getElementById('incident-desc').textContent = s.description;
+            document.getElementById('incident-meta').textContent =
+                s.id + '  ·  ' + s.service + '  ·  window ' + s.timeWindow;
+            const sev = document.getElementById('header-sev');
+            sev.textContent = s.sevLabel;
+            sev.className = 'sev-badge ' + s.sevClass;
+        }
+
+        function setStatus(text, statusClass) {
+            const badge = document.getElementById('status-badge');
+            badge.className = 'status-badge ' + (statusClass || '');
+            document.getElementById('status-text').textContent = text;
+        }
+
+        // Select a scenario; when run=true, reset the view and re-run triage.
+        function selectScenario(id, run) {
+            activeId = id;
+            const s = DATA.scenarios[id];
+            markActive(id);
+            renderHeader(s);
+            resetView();
+            if (run) runTriage();
+        }
+
+        function resetView() {
+            document.getElementById('verdict-section').classList.add('hidden');
+            document.getElementById('delib-section').classList.add('hidden');
+            document.getElementById('agents-label').classList.add('hidden');
+            const grid = document.getElementById('agent-grid');
+            grid.innerHTML = '';
+            grid.appendChild(el('div', 'empty-hint', 'Dispatching agents…'));
+        }
+
+        function agentCard(a) {
+            const card = el('div', 'agent-card fade-in');
+
+            const head = el('div', 'agent-header');
+            head.appendChild(el('span', 'agent-name', a.name + ' Agent'));
+            let ftClass = 'finding-type';
+            if (ALARM_TYPES.has(a.findingType)) ftClass += ' alarm';
+            else if (WARN_TYPES.has(a.findingType)) ftClass += ' warn';
+            head.appendChild(el('span', ftClass, a.findingType));
+            card.appendChild(head);
+
+            card.appendChild(el('div', 'agent-summary', a.summary));
+            card.appendChild(el('div', 'agent-detail', a.detail));
+
+            const meta = el('div', 'progress-meta');
+            meta.appendChild(el('span', null, 'confidence'));
+            meta.appendChild(el('span', null, Math.round(a.confidence * 100) + '%'));
+            card.appendChild(meta);
+
+            const bar = el('div', 'progress-bar');
+            const fill = el('div', 'progress-fill');
+            bar.appendChild(fill);
+            card.appendChild(bar);
+
+            // animate the confidence bar after insertion
+            setTimeout(() => { fill.style.width = Math.round(a.confidence * 100) + '%'; }, 80);
+            return card;
+        }
+
+        function runTriage() {
+            const s = DATA.scenarios[activeId];
+            const grid = document.getElementById('agent-grid');
+            const runBtn = document.getElementById('run-sim');
+
+            runBtn.disabled = true;
+            document.getElementById('verdict-section').classList.add('hidden');
+            document.getElementById('delib-section').classList.add('hidden');
+            document.getElementById('agents-label').classList.remove('hidden');
+            setStatus('Triage in Progress', 'mitigating');
+            grid.innerHTML = '';
+
+            s.agents.forEach((a, i) => {
+                setTimeout(() => {
+                    grid.appendChild(agentCard(a));
+                    if (i === s.agents.length - 1) setTimeout(() => showVerdict(s), 900);
+                }, i * 850);
+            });
+        }
+
+        function showVerdict(s) {
+            const v = document.getElementById('verdict-section');
+            v.classList.remove('hidden');
+            v.classList.add('fade-in');
+
+            document.getElementById('verdict-msg').textContent = s.verdict;
+            document.getElementById('verdict-rootcause').textContent = 'Root cause: ' + s.rootCause;
+            document.getElementById('verdict-confidence').textContent =
+                'confidence ' + s.confidence.toFixed(2) + '  ·  ' + s.sevLabel + '  ·  ' + s.statusLabel;
+
+            const list = document.getElementById('action-list');
+            list.innerHTML = '';
+            s.remediation.forEach(act => {
+                const item = el('div', 'action-item');
+                item.appendChild(el('span', 'arrow', '→'));
+                item.appendChild(el('span', null, act));
+                list.appendChild(item);
+            });
+
+            setStatus(s.statusLabel, s.status);
+            renderDeliberation(s);
+            document.getElementById('run-sim').disabled = false;
+        }
+
+        function renderDeliberation(s) {
+            if (!s.deliberation || s.deliberation.length === 0) return;
+            const section = document.getElementById('delib-section');
+            const list = document.getElementById('delib-list');
+            list.innerHTML = '';
+            s.deliberation.forEach(m => {
+                const who = (m.sender || '').replace('-agent', '');
+                const msg = el('div', 'delib-msg ' + who);
+                const label = el('span', 'who', '@' + (m.sender || 'agent') + ': ');
+                msg.appendChild(label);
+                msg.appendChild(document.createTextNode(m.content));
+                list.appendChild(msg);
+            });
+            section.classList.remove('hidden');
+            section.classList.add('fade-in');
+        }
+
+        function boot() {
+            if (!DATA || !DATA.order || DATA.order.length === 0) {
+                document.getElementById('incident-room').classList.add('hidden');
+                document.getElementById('boot-error').classList.remove('hidden');
+                return;
+            }
+            renderSidebar();
+            // auto-select + run the first scenario so judges see immediate action
+            selectScenario(DATA.order[0], true);
+            document.getElementById('run-sim').addEventListener('click', runTriage);
+        }
+
+        boot();
     </script>
 </body>
 </html>
