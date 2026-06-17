@@ -4,11 +4,11 @@
 WARNING: Metrics anomaly detected for API Gateway Latency Spike without clear change correlation.
 
 ## Timeline
-- **23:40:36 UTC**: Incident Alert Ingested
-- **23:41:36 UTC**: Triage assigned to Metrics, Logs, Change, and Runbook agents
-- **23:43:36 UTC**: Deliberation channel discussions completed (0 messages)
-- **23:45:36 UTC**: Commander Verdict published (Status: RESOLVED, Confidence: 0.89)
-- **23:45:39 UTC**: Automated Remediation executed successfully (MTTR: 2.8s)
+- **23:41:58 UTC**: Incident Alert Ingested
+- **23:42:58 UTC**: Triage assigned to Metrics, Logs, Change, and Runbook agents
+- **23:44:58 UTC**: Deliberation channel discussions completed (0 messages)
+- **23:46:58 UTC**: Commander Verdict published (Status: RESOLVED, Confidence: 0.89)
+- **23:47:00 UTC**: Automated Remediation executed successfully (MTTR: 2.8s)
 
 ## Root Cause
 Metrics anomaly detected for API Gateway Latency Spike with no corresponding change correlation.
