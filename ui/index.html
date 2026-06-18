@@ -11,10 +11,7 @@
     <link rel="stylesheet" href="assets/components.css">
     <style>
         body {
-            background-color: #070A13;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(0, 180, 216, 0.12) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+            background-color: #0b132b;
             overflow-x: hidden;
         }
 
@@ -417,7 +414,7 @@
         }
     </style>
 </head>
-<body class="sl-body sl-grain">
+<body class=" sl-grain">
 
     <!-- NAVIGATION HEADER -->
     <nav class="sl-nav header-nav">
@@ -510,13 +507,13 @@
     <section class="section-wrap">
         <div class="section-header">
             <span class="section-label">The Cooperative Swarm</span>
-            <h2 class="section-title">Specialized AI Agents</h2>
+            <h2 class="section-title " style="color: white;">Specialized AI Agents</h2>
         </div>
         <div class="agents-grid">
             <!-- Commander Agent -->
             <div class="agent-item-card">
                 <span class="agent-badge commander">Orchestrator</span>
-                <h3 class="agent-name">Incident Commander</h3>
+                <h3 class="agent-name" style="color: white;">Incident Commander</h3>
                 <p class="agent-desc">Ingests alerts, creates incident workspaces, coordinates parallel diagnostics, facilitates agent deliberation, scores confidence, and triggers auto-remediation.</p>
                 <div class="agent-framework">Framework: LangGraph (Stateful Swarms)</div>
             </div>
@@ -524,7 +521,7 @@
             <!-- Metrics Agent -->
             <div class="agent-item-card">
                 <span class="agent-badge metrics">Telemetry</span>
-                <h3 class="agent-name">Metrics Agent</h3>
+                <h3 class="agent-name" style="color: white;">Metrics Agent</h3>
                 <p class="agent-desc">Monitors infrastructure, detects anomaly signals (CPU, latency spikes, DB locks), and calculates saturation thresholds in target incident windows.</p>
                 <div class="agent-framework">Framework: CrewAI (Telemetry Specialist)</div>
             </div>
@@ -532,7 +529,7 @@
             <!-- Logs Agent -->
             <div class="agent-item-card">
                 <span class="agent-badge logs">Code Audit</span>
-                <h3 class="agent-name">Logs Agent</h3>
+                <h3 class="agent-name" style="color: white;">Logs Agent</h3>
                 <p class="agent-desc">Parses system logs, correlates error frequency bucket timestamps, extracts stack traces and exception signatures, and flags root errors.</p>
                 <div class="agent-framework">Framework: Anthropic SDK (Pattern Recognition)</div>
             </div>
@@ -540,7 +537,7 @@
             <!-- Change Agent -->
             <div class="agent-item-card">
                 <span class="agent-badge change">CI/CD & Deploy</span>
-                <h3 class="agent-name">Change Agent</h3>
+                <h3 class="agent-name" style="color: white;">Change Agent</h3>
                 <p class="agent-desc">Audits code releases, configuration deployments, and schema migrations. Automatically correlates deployment events to incident start times.</p>
                 <div class="agent-framework">Framework: Pydantic AI (Type-Safe Telemetry)</div>
             </div>
@@ -548,7 +545,7 @@
             <!-- Runbook Agent -->
             <div class="agent-item-card">
                 <span class="agent-badge runbook">Playbooks</span>
-                <h3 class="agent-name">Runbook Agent</h3>
+                <h3 class="agent-name" style="color: white;">Runbook Agent</h3>
                 <p class="agent-desc">Scans internal repositories for matching system runbooks, checks procedure staleness (e.g. pool configurations), and recommends actions.</p>
                 <div class="agent-framework">Framework: Claude SDK (Procedural Retrieval)</div>
             </div>
@@ -556,7 +553,7 @@
             <!-- Evidence Store -->
             <div class="agent-item-card">
                 <span class="agent-badge">Shared Store</span>
-                <h3 class="agent-name">Evidence & Scorer</h3>
+                <h3 class="agent-name"style="color: white;">Evidence & Scorer</h3>
                 <p class="agent-desc">Maintains an in-memory evidence ledger of all agent observations. Computes weighted confidence scores with bonus modifiers from deliberation.</p>
                 <div class="agent-framework">Math Engine: Weighted Gating Model</div>
             </div>
@@ -567,7 +564,7 @@
     <section class="section-wrap">
         <div class="section-header">
             <span class="section-label">Automated Workflow</span>
-            <h2 class="section-title">Incident Response Pipeline</h2>
+            <h2 class="section-title" style="color: white;">Incident Response Pipeline</h2>
         </div>
         <div class="timeline-steps">
             <div class="step-item">
@@ -596,7 +593,7 @@
     <!-- CTA BANNER -->
     <section class="section-wrap">
         <div class="cta-block">
-            <h2 class="cta-title">Test the Swarm</h2>
+            <h2 class="cta-title"style="color: white;" >Test the Swarm</h2>
             <p class="cta-desc">Launch the Incident Commander console to simulate incidents and observe cooperative AI agents collaborating to resolve production outages.</p>
             <a href="dashboard.html" class="btn btn--lg btn-primary">Start Live Simulation <span class="arrow">→</span></a>
         </div>

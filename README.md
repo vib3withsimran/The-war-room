@@ -180,3 +180,15 @@ python -m pytest
 - [x] **Phase 4:** Evidence, Scoring & Artifact System (Scoring engine & Postmortem generator)
 - [x] **Phase 5:** Real Data Pipeline (Integrate metrics, logs, and deploys loader)
 - [x] **Phase 6:** Web Dashboard (Minimalist interactive Studio UI prototype with full Remediation & Git-Ops commits)
+
+---
+
+## 👥 Contributors
+
+This project was built by a collaborative team of engineers:
+
+<a href="https://github.com/vib3withsimran" title="Simran Gupta"><img src="https://github.com/vib3withsimran.png" width="60px" style="border-radius: 50%; margin: 5px;" alt="Simran Gupta"/></a>
+<a href="https://github.com/Elie-lokossou" title="Elie Lokossou"><img src="https://github.com/Elie-lokossou.png" width="60px" style="border-radius: 50%; margin: 5px;" alt="Elie Lokossou"/></a>
+<a href="https://github.com/Fidan6557" title="Fidan Bagirova"><img src="https://github.com/Fidan6557.png" width="60px" style="border-radius: 50%; margin: 5px;" alt="Fidan Bagirova"/></a>
+<a href="https://github.com/MohamedGhoniem11" title="Mohamed Ghoniem"><img src="https://github.com/MohamedGhoniem11.png" width="60px" style="border-radius: 50%; margin: 5px;" alt="Mohamed Ghoniem"/></a>
+<a href="https://github.com/SirjanSingh" title="Sirjan Singh"><img src="https://github.com/SirjanSingh.png" width="60px" style="border-radius: 50%; margin: 5px;" alt="Sirjan Singh"/></a>
