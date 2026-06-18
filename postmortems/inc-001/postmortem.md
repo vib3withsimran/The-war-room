@@ -1,14 +1,14 @@
-# Postmortem: inc-001 — 2026-06-17
+# Postmortem: inc-001 — 2026-06-18
 
 ## Summary
 WARNING: Metrics anomaly detected for API Gateway Latency Spike without clear change correlation.
 
 ## Timeline
-- **23:41:58 UTC**: Incident Alert Ingested
-- **23:42:58 UTC**: Triage assigned to Metrics, Logs, Change, and Runbook agents
-- **23:44:58 UTC**: Deliberation channel discussions completed (0 messages)
-- **23:46:58 UTC**: Commander Verdict published (Status: RESOLVED, Confidence: 0.89)
-- **23:47:00 UTC**: Automated Remediation executed successfully (MTTR: 2.8s)
+- **00:04:44 UTC**: Incident Alert Ingested
+- **00:05:44 UTC**: Triage assigned to Metrics, Logs, Change, and Runbook agents
+- **00:07:44 UTC**: Deliberation channel discussions completed (0 messages)
+- **00:09:44 UTC**: Commander Verdict published (Status: RESOLVED, Confidence: 0.89)
+- **00:09:47 UTC**: Automated Remediation executed successfully (MTTR: 2.8s)
 
 ## Root Cause
 Metrics anomaly detected for API Gateway Latency Spike with no corresponding change correlation.
