@@ -1280,13 +1280,16 @@ ${evidenceTrail.trim()}
             const term = document.getElementById('git-terminal-lines');
             term.innerHTML = '';
             
+            const commitHash = (window.WAR_ROOM_COMMIT && window.WAR_ROOM_COMMIT.hash) || "e1836c8";
+            const commitUrl = (window.WAR_ROOM_COMMIT && window.WAR_ROOM_COMMIT.url) || `https://github.com/vib3withsimran/The-war-room/commit/${commitHash}`;
+            
             const lines = [
                 { text: "$ git status", delay: 300, color: "#9CA3AF" },
                 { text: `On branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tpostmortems/${s.id}/\n\nnothing added to commit but untracked files present (use "git add" to track)`, delay: 800 },
                 { text: `$ git add postmortems/${s.id}/`, delay: 500, color: "#9CA3AF" },
                 { text: `$ git commit -m "docs: postmortem ${s.id}"`, delay: 600, color: "#9CA3AF" },
-                { text: `[main abc1234] docs: postmortem ${s.id}\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/${s.id}/postmortem.md`, delay: 800, color: "#10B981" },
-                { text: `🔗 Commit URL: <a href="https://github.com/vib3withsimran/The-war-room/commit/abc1234" target="_blank" style="color: #60A5FA; text-decoration: underline;">https://github.com/vib3withsimran/The-war-room/commit/abc1234</a>`, delay: 300 }
+                { text: `[main ${commitHash}] docs: postmortem ${s.id}\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/${s.id}/postmortem.md`, delay: 800, color: "#10B981" },
+                { text: `🔗 Commit URL: <a href="${commitUrl}" target="_blank" style="color: #60A5FA; text-decoration: underline;">${commitUrl}</a>`, delay: 300 }
             ];
             
             for (let i = 0; i < lines.length; i++) {

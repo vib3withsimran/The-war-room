@@ -149,10 +149,33 @@ def main():
         "// Produced by running each scenario through the real Commander + agent\n"
         "// pipeline so the dashboard reflects genuine, data-driven findings.\n"
     )
+    # Resolve the latest commit dynamically using git
+    import subprocess
+    from lib.git_ops import get_commit_url
+    commit_hash = "e1836c8"
+    try:
+        # Try to get origin/main HEAD commit hash first, as it is guaranteed to be pushed to the upstream repo
+        res = subprocess.run(["git", "rev-parse", "--short", "origin/main"], capture_output=True, text=True)
+        if res.returncode == 0 and res.stdout.strip():
+            commit_hash = res.stdout.strip()
+        else:
+            # Fall back to local HEAD
+            res_head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
+            if res_head.returncode == 0 and res_head.stdout.strip():
+                commit_hash = res_head.stdout.strip()
+    except Exception:
+        pass
+    
+    commit_url = get_commit_url(commit_hash)
+    commit_payload = json.dumps({"hash": commit_hash, "url": commit_url}, indent=2)
+
     with open(OUTPUT, "w", encoding="utf-8") as f:
         f.write(banner)
         f.write("window.WAR_ROOM_SCENARIOS = ")
         f.write(body)
+        f.write(";\n\n")
+        f.write("window.WAR_ROOM_COMMIT = ")
+        f.write(commit_payload)
         f.write(";\n")
 
     print(f"Wrote {len(scenarios)} scenarios to {os.path.relpath(OUTPUT, REPO_ROOT)}")
