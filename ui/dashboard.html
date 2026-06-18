@@ -1322,49 +1322,81 @@
           <button class="tab-btn" data-tab="settings">⚙️ Swarm Settings</button>
         </div>
 
-        <!-- TAB PANE: LIVE OPS & TOPOLOGY -->
-        <div id="pane-ops" class="tab-pane">
-          <div class="topology-container">
-            <div class="topology-grid"></div>
-            <svg class="topo-svg" id="topo-connections"></svg>
-
-            <!-- Service Nodes -->
-            <div class="topo-node healthy" id="node-gw" style="top: 40%; left: 10%">
-              <span class="topo-node-name">API Gateway</span>
-              <span class="topo-node-status">Healthy</span>
+            <!-- TAB PANE: LIVE OPS & TOPOLOGY -->
+            <div id="pane-ops" class="tab-pane">
+                <div class="topology-container">
+                    <div class="topology-grid"></div>
+                    <svg class="topo-svg" id="topo-connections"></svg>
+                    
+                    <!-- Service Nodes -->
+                    <div class="topo-node healthy" id="node-gw" style="top: 40%; left: 10%;">
+                        <span class="topo-node-name">API Gateway</span>
+                        <span class="topo-node-status">Healthy</span>
+                    </div>
+                    <div class="topo-node healthy" id="node-usr" style="top: 15%; left: 45%;">
+                        <span class="topo-node-name">User Service</span>
+                        <span class="topo-node-status">Healthy</span>
+                    </div>
+                    <div class="topo-node healthy" id="node-pmt" style="top: 65%; left: 45%;">
+                        <span class="topo-node-name">Payment Serv</span>
+                        <span class="topo-node-status">Healthy</span>
+                    </div>
+                    <div class="topo-node healthy" id="node-vlt" style="top: 65%; left: 78%;">
+                        <span class="topo-node-name">Vault API</span>
+                        <span class="topo-node-status">Healthy</span>
+                    </div>
+                    <div class="topo-node healthy" id="node-db" style="top: 15%; left: 78%;">
+                        <span class="topo-node-name">User DB</span>
+                        <span class="topo-node-status">Healthy</span>
+                    </div>
+                </div>
+                
+                <div class="verdict-card" style="grid-template-columns: 1fr 1.5fr; gap: 32px; margin-top: 32px;">
+                    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h2 style="margin-top: 0; font-size: 12px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); transition: background 0.3s, box-shadow 0.3s;" id="telemetry-dot"></span>
+                                Scenario Telemetry Monitor
+                            </h2>
+                            <div style="font-size: 13px; color: var(--fg-muted); line-height: 1.6; text-align: left; margin-bottom: 24px;">
+                                Live telemetry metrics of the active service topology. Running the AI swarm triage will capture the latency anomaly, and running remediation will dynamically restore the baseline health in real-time.
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius); text-align: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);">
+                                <div style="font-size: 10px; color: var(--fg-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">P99 Latency</div>
+                                <div style="font-size: 26px; font-weight: 800; color: var(--fg); margin-top: 8px; font-family: var(--font-mono); transition: color 0.3s;" id="metric-latency">50ms</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border); padding: 16px; border-radius: var(--radius); text-align: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.2);">
+                                <div style="font-size: 10px; color: var(--fg-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em;">Error Rate</div>
+                                <div style="font-size: 26px; font-weight: 800; color: var(--fg); margin-top: 8px; font-family: var(--font-mono); transition: color 0.3s;" id="metric-errors">0.0%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background: rgba(10, 15, 30, 0.4); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+                        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--fg-muted); font-family: var(--font-mono); margin-bottom: 12px; font-weight: 500;">
+                            <span>telemetry_p99_latency (ms)</span>
+                            <span style="color: var(--accent); transition: color 0.3s;" id="telemetry-scale">Max: 100ms</span>
+                        </div>
+                        <div style="flex: 1; min-height: 140px; position: relative;">
+                            <svg id="telemetry-chart" style="width: 100%; height: 100%; overflow: visible; display: block;">
+                                <defs>
+                                    <linearGradient id="chart-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.25" id="grad-stop-start"/>
+                                        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" id="grad-stop-end"/>
+                                    </linearGradient>
+                                </defs>
+                                <!-- Grid lines -->
+                                <g stroke="rgba(255,255,255,0.03)" stroke-width="1" id="chart-grid-lines"></g>
+                                <!-- Area under path -->
+                                <path id="chart-area" d="" fill="url(#chart-grad)"></path>
+                                <!-- Chart line -->
+                                <path id="chart-line" d="" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" style="transition: stroke 0.3s;"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="topo-node healthy" id="node-usr" style="top: 15%; left: 45%">
-              <span class="topo-node-name">User Service</span>
-              <span class="topo-node-status">Healthy</span>
-            </div>
-            <div class="topo-node healthy" id="node-pmt" style="top: 65%; left: 45%">
-              <span class="topo-node-name">Payment Serv</span>
-              <span class="topo-node-status">Healthy</span>
-            </div>
-            <div class="topo-node healthy" id="node-vlt" style="top: 65%; left: 78%">
-              <span class="topo-node-name">Vault API</span>
-              <span class="topo-node-status">Healthy</span>
-            </div>
-            <div class="topo-node healthy" id="node-db" style="top: 15%; left: 78%">
-              <span class="topo-node-name">User DB</span>
-              <span class="topo-node-status">Healthy</span>
-            </div>
-          </div>
-
-          <div class="verdict-card" style="grid-template-columns: 1fr">
-            <div>
-              <h2>Scenario Live Telemetry Feed</h2>
-              <div
-                style="font-size: 13px; color: var(--fg-muted); line-height: 1.6; text-align: left"
-              >
-                This Operations View renders live telemetry topology mapped from active scenario
-                alert data. Press <strong>Execute Triage</strong> in the sidebar to trigger the AI
-                Swarm, which will automatically verify anomalies, deliberate root causes, and
-                transition through tabs to guide the resolution workflow.
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- TAB PANE: SWARM DELIBERATION -->
         <div id="pane-swarm" class="tab-pane hidden">
@@ -1869,32 +1901,184 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
               });
             }
 
-            function renderHeader(s) {
-              document.getElementById("incident-title").textContent = s.title;
-              document.getElementById("incident-desc").textContent = s.description;
-              document.getElementById("incident-meta").textContent =
-                s.id + "  ·  " + s.service + "  ·  window " + s.timeWindow;
-              const sev = document.getElementById("header-sev");
-              sev.textContent = s.sevLabel;
-              sev.className = "sev-badge " + s.sevClass;
-            }
-            function setStatus(text, statusClass) {
-              const badge = document.getElementById("status-badge");
-              badge.className = "status-badge " + (statusClass || "");
-              document.getElementById("status-text").textContent = text;
-            }
+        function renderHeader(s) {
+            document.getElementById('incident-title').textContent = s.title;
+            document.getElementById('incident-desc').textContent = s.description;
+            document.getElementById('incident-meta').textContent =
+                s.id + '  ·  ' + s.service + '  ·  window ' + s.timeWindow;
+            const sev = document.getElementById('header-sev');
+            sev.textContent = s.sevLabel;
+            sev.className = 'sev-badge ' + s.sevClass;
+        }
 
-            // Select a scenario; when run=true, reset the view and re-run triage.
-            function selectScenario(id, run) {
-              activeId = id;
-              const s = DATA.scenarios[id];
-              markActive(id);
-              renderHeader(s);
-              resetView();
-              updateTopologyNodes(id);
-              switchTab("ops"); // Default back to Live Ops view on selection
-              if (run) runTriage();
+        function setStatus(text, statusClass) {
+            const badge = document.getElementById('status-badge');
+            badge.className = 'status-badge ' + (statusClass || '');
+            document.getElementById('status-text').textContent = text;
+        }
+
+        // --- Real-time Telemetry Monitor Subsystem ---
+        let telemetryState = 'healthy'; // 'healthy', 'alerting', 'remediating'
+        let telemetryScenario = null;
+        let telemetryPoints = [];
+        const maxTelemetryPoints = 40;
+        let remediationProgress = 0.0;
+        let telemetryTimer = null;
+
+        // Initialize telemetry history
+        for (let i = 0; i < maxTelemetryPoints; i++) {
+            telemetryPoints.push(50 + Math.random() * 6 - 3); // base 50ms
+        }
+
+        function setTelemetryState(state, scenarioId = null) {
+            telemetryState = state;
+            if (scenarioId) {
+                telemetryScenario = scenarioId;
             }
+            const dot = document.getElementById('telemetry-dot');
+            const latencyMet = document.getElementById('metric-latency');
+            const errorsMet = document.getElementById('metric-errors');
+            if (!dot) return;
+            
+            if (state === 'healthy') {
+                remediationProgress = 0.0;
+                dot.style.background = 'var(--success)';
+                dot.style.boxShadow = '0 0 8px var(--success)';
+                latencyMet.style.color = 'var(--fg)';
+                errorsMet.style.color = 'var(--fg)';
+            } else if (state === 'alerting') {
+                dot.style.background = 'var(--danger)';
+                dot.style.boxShadow = '0 0 8px var(--danger)';
+                latencyMet.style.color = 'var(--danger)';
+                errorsMet.style.color = 'var(--danger)';
+            } else if (state === 'remediating') {
+                dot.style.background = 'var(--warning)';
+                dot.style.boxShadow = '0 0 8px var(--warning)';
+                latencyMet.style.color = 'var(--warning)';
+                errorsMet.style.color = 'var(--warning)';
+            }
+        }
+
+        function updateRemediationProgress(p) {
+            remediationProgress = p;
+        }
+
+        function tickTelemetry() {
+            let baseTarget = 50;
+            let errorTarget = 0.0;
+            
+            if (telemetryState === 'alerting' || telemetryState === 'remediating') {
+                let maxLatency = 2450;
+                let maxErrors = 8.4;
+                if (telemetryScenario === 'inc-002') {
+                    maxLatency = 1450;
+                    maxErrors = 1.2;
+                } else if (telemetryScenario === 'inc-003') {
+                    maxLatency = 5200;
+                    maxErrors = 98.5;
+                }
+                
+                if (telemetryState === 'alerting') {
+                    baseTarget = maxLatency;
+                    errorTarget = maxErrors;
+                } else { // remediating
+                    baseTarget = 50 + (maxLatency - 50) * (1 - remediationProgress);
+                    errorTarget = maxErrors * (1 - remediationProgress);
+                }
+            }
+            
+            const jitterPercent = 0.05;
+            const latency = baseTarget + (Math.random() * 2 - 1) * baseTarget * jitterPercent;
+            const errors = Math.max(0, errorTarget + (Math.random() * 2 - 1) * (errorTarget > 0 ? 0.2 : 0.0));
+            
+            const latencyMet = document.getElementById('metric-latency');
+            const errorsMet = document.getElementById('metric-errors');
+            if (latencyMet) latencyMet.textContent = Math.round(latency) + 'ms';
+            if (errorsMet) errorsMet.textContent = errors.toFixed(1) + '%';
+            
+            telemetryPoints.push(latency);
+            if (telemetryPoints.length > maxTelemetryPoints) {
+                telemetryPoints.shift();
+            }
+            
+            drawTelemetryChart();
+        }
+
+        function drawTelemetryChart() {
+            const svg = document.getElementById('telemetry-chart');
+            if (!svg || svg.clientWidth === 0) return;
+            
+            const w = svg.clientWidth;
+            const h = svg.clientHeight;
+            
+            const maxVal = Math.max(100, ...telemetryPoints) * 1.1;
+            const scaleText = document.getElementById('telemetry-scale');
+            if (scaleText) {
+                scaleText.textContent = 'Max: ' + Math.round(maxVal) + 'ms';
+                scaleText.style.color = (telemetryState === 'alerting') ? 'var(--danger)' : ((telemetryState === 'remediating') ? 'var(--warning)' : 'var(--accent)');
+            }
+            
+            const chartLine = document.getElementById('chart-line');
+            const gradStart = document.getElementById('grad-stop-start');
+            const gradEnd = document.getElementById('grad-stop-end');
+            
+            let strokeColor = 'var(--accent)';
+            if (telemetryState === 'alerting') strokeColor = 'var(--danger)';
+            else if (telemetryState === 'remediating') strokeColor = 'var(--warning)';
+            
+            if (chartLine) chartLine.setAttribute('stroke', strokeColor);
+            if (gradStart) gradStart.setAttribute('stop-color', strokeColor);
+            if (gradEnd) gradEnd.setAttribute('stop-color', strokeColor);
+            
+            const gridGroup = document.getElementById('chart-grid-lines');
+            if (gridGroup) {
+                gridGroup.innerHTML = '';
+                for (let i = 1; i <= 3; i++) {
+                    const y = (h / 4) * i;
+                    const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    l.setAttribute('x1', 0);
+                    l.setAttribute('y1', y);
+                    l.setAttribute('x2', w);
+                    l.setAttribute('y2', y);
+                    gridGroup.appendChild(l);
+                }
+            }
+            
+            const pointsCount = telemetryPoints.length;
+            let pathD = '';
+            for (let i = 0; i < pointsCount; i++) {
+                const x = (w / (pointsCount - 1)) * i;
+                const y = h - (telemetryPoints[i] / maxVal) * h;
+                if (i === 0) pathD += `M ${x} ${y}`;
+                else pathD += ` L ${x} ${y}`;
+            }
+            
+            if (chartLine) chartLine.setAttribute('d', pathD);
+            
+            const areaPath = document.getElementById('chart-area');
+            if (areaPath) {
+                const areaD = pathD + ` L ${w} ${h} L 0 ${h} Z`;
+                areaPath.setAttribute('d', areaD);
+            }
+        }
+
+        // Select a scenario; when run=true, reset the view and re-run triage.
+        function selectScenario(id, run) {
+            activeId = id;
+            const s = DATA.scenarios[id];
+            markActive(id);
+            renderHeader(s);
+            resetView();
+            updateTopologyNodes(id);
+            switchTab('ops'); // Default back to Live Ops view on selection
+            
+            if (run) {
+                setTelemetryState('alerting', id);
+                runTriage();
+            } else {
+                setTelemetryState('healthy');
+            }
+        }
 
             function resetView() {
               document.getElementById("verdict-section").classList.add("hidden");
@@ -2168,19 +2352,22 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
               return html;
             }
 
-            async function commitToGitSim() {
-              const s = DATA.scenarios[activeId];
-              const btn = document.getElementById("commit-to-git");
-              btn.disabled = true;
-              btn.innerText = "Committed";
-
-              const gitContainer = document.getElementById("git-output-container");
-              gitContainer.classList.remove("hidden");
-
-              const term = document.getElementById("git-terminal-lines");
-              term.innerHTML = "";
-
-              const lines = [
+        async function commitToGitSim() {
+            const s = DATA.scenarios[activeId];
+            const btn = document.getElementById('commit-to-git');
+            btn.disabled = true;
+            btn.innerText = 'Committed';
+            
+            const gitContainer = document.getElementById('git-output-container');
+            gitContainer.classList.remove('hidden');
+            
+            const term = document.getElementById('git-terminal-lines');
+            term.innerHTML = '';
+            
+            const commitHash = (window.WAR_ROOM_COMMIT && window.WAR_ROOM_COMMIT.hash) || "e1836c8";
+            const commitUrl = (window.WAR_ROOM_COMMIT && window.WAR_ROOM_COMMIT.url) || `https://github.com/vib3withsimran/The-war-room/commit/${commitHash}`;
+            
+            const lines = [
                 { text: "$ git status", delay: 300, color: "#9CA3AF" },
                 {
                   text: `On branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tpostmortems/${s.id}/\n\nnothing added to commit but untracked files present (use "git add" to track)`,
@@ -2188,18 +2375,11 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
                 },
                 { text: `$ git add postmortems/${s.id}/`, delay: 500, color: "#9CA3AF" },
                 { text: `$ git commit -m "docs: postmortem ${s.id}"`, delay: 600, color: "#9CA3AF" },
-                {
-                  text: `[main abc1234] docs: postmortem ${s.id}\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/${s.id}/postmortem.md`,
-                  delay: 800,
-                  color: "#10B981",
-                },
-                {
-                  text: `🔗 Commit URL: <a href="https://github.com/vib3withsimran/The-war-room/commit/abc1234" target="_blank" style="color: #60A5FA; text-decoration: underline;">https://github.com/vib3withsimran/The-war-room/commit/abc1234</a>`,
-                  delay: 300,
-                },
-              ];
-
-              for (let i = 0; i < lines.length; i++) {
+                { text: `[main ${commitHash}] docs: postmortem ${s.id}\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/${s.id}/postmortem.md`, delay: 800, color: "#10B981" },
+                { text: `🔗 Commit URL: <a href="${commitUrl}" target="_blank" style="color: #60A5FA; text-decoration: underline;">${commitUrl}</a>`, delay: 300 }
+            ];
+            
+            for (let i = 0; i < lines.length; i++) {
                 const line = lines[i];
                 await new Promise((resolve) => setTimeout(resolve, line.delay));
                 const div = document.createElement("div");
@@ -2251,38 +2431,48 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
                           </div>
                       `;
                 stepsDiv.appendChild(card);
-              });
-
-              // Execute actions sequentially
-              let startTime = Date.now();
-              for (let i = 0; i < mappedActions.length; i++) {
+            });
+            
+            // Set telemetry state to remediating
+            setTelemetryState('remediating', activeId);
+            
+            // Execute actions sequentially
+            let startTime = Date.now();
+            for (let i = 0; i < mappedActions.length; i++) {
                 const act = mappedActions[i];
                 const card = document.getElementById(`step-card-${i}`);
-                const statusLabel = card.querySelector(".step-status");
-                const fill = card.querySelector(".progress-fill");
-
-                statusLabel.innerText = "Running...";
-                statusLabel.style.color = "var(--accent)";
-
-                await new Promise((resolve) => {
-                  animateProgress(fill, act.duration, resolve);
+                const statusLabel = card.querySelector('.step-status');
+                const fill = card.querySelector('.progress-fill');
+                
+                statusLabel.innerText = 'Running...';
+                statusLabel.style.color = 'var(--accent)';
+                
+                await new Promise(resolve => {
+                    animateProgress(fill, act.duration, () => {
+                        const progress = (i + 1) / mappedActions.length;
+                        updateRemediationProgress(progress);
+                        resolve();
+                    });
                 });
-
-                statusLabel.innerText = "Completed ✅";
-                statusLabel.style.color = "#10B981";
-              }
-
-              let totalMttr = ((Date.now() - startTime) / 1000).toFixed(1);
-
-              // Final states
-              btn.classList.add("hidden");
-              document.getElementById("remediation-status").innerText = "Remediation Complete";
-              document.getElementById("resolved-banner").classList.remove("hidden");
-              document.getElementById("mttr-display").innerText = `${totalMttr}s`;
-
-              document.getElementById("status-badge").style.background = "rgba(16, 185, 129, 0.1)";
-              document.getElementById("status-badge").style.color = "#10B981";
-              document.getElementById("status-badge").querySelector("span").innerText = "Incident Resolved";
+                
+                statusLabel.innerText = 'Completed ✅';
+                statusLabel.style.color = '#10B981';
+            }
+            
+            // Reset telemetry back to healthy
+            setTelemetryState('healthy');
+            
+            let totalMttr = ((Date.now() - startTime) / 1000).toFixed(1);
+            
+            // Final states
+            btn.classList.add('hidden');
+            document.getElementById('remediation-status').innerText = 'Remediation Complete';
+            document.getElementById('resolved-banner').classList.remove('hidden');
+            document.getElementById('mttr-display').innerText = `${totalMttr}s`;
+            
+            document.getElementById('status-badge').style.background = 'rgba(16, 185, 129, 0.1)';
+            document.getElementById('status-badge').style.color = '#10B981';
+            document.getElementById('status-badge').querySelector('span').innerText = 'Incident Resolved';
 
               // Show postmortem panel
               const pmSec = document.getElementById("postmortem-section");
@@ -2427,26 +2617,29 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
                   switchTab('ops'); // Switch back to live ops
               }
 
-              function boot() {
-                  if (!DATA || !DATA.order || DATA.order.length === 0) {
-                      document.getElementById('incident-room').classList.add('hidden');
-                      document.getElementById('boot-error').classList.remove('hidden');
-                      return;
-                  }
-                  renderSidebar();
-                  // auto-select + run the first scenario so judges see immediate action
-                  selectScenario(DATA.order[0], true);
-                  document.getElementById('run-sim').addEventListener('click', runTriage);
-                  document.getElementById('run-remediation').addEventListener('click', runRemediation);
-                  document.getElementById('commit-to-git').addEventListener('click', commitToGitSim);
+        function boot() {
+            if (!DATA || !DATA.order || DATA.order.length === 0) {
+                document.getElementById('incident-room').classList.add('hidden');
+                document.getElementById('boot-error').classList.remove('hidden');
+                return;
+            }
+            renderSidebar();
+            // auto-select + run the first scenario so judges see immediate action
+            selectScenario(DATA.order[0], true);
+            document.getElementById('run-sim').addEventListener('click', runTriage);
+            document.getElementById('run-remediation').addEventListener('click', runRemediation);
+            document.getElementById('commit-to-git').addEventListener('click', commitToGitSim);
+            
+            window.addEventListener('resize', drawTopologyConnections);
+            setTimeout(drawTopologyConnections, 100);
+            
+            // Start telemetry monitor loop
+            telemetryTimer = setInterval(tickTelemetry, 300);
+            window.addEventListener('resize', drawTelemetryChart);
+            setTimeout(drawTelemetryChart, 100);
+        }
 
-                  window.addEventListener('resize', drawTopologyConnections);
-                  setTimeout(drawTopologyConnections, 100);
-              }
-
-
-
-            boot();
+        boot();
     </script>
   </body>
 </html>

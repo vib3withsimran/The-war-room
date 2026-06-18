@@ -255,3 +255,8 @@ window.WAR_ROOM_SCENARIOS = {
     },
   },
 };
+
+window.WAR_ROOM_COMMIT = {
+  "hash": "e1836c8",
+  "url": "https://github.com/vib3withsimran/The-war-room/commit/e1836c8"
+};
