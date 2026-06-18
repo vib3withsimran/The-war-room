@@ -1,822 +1,1113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WAR ROOM | Studio Dashboard</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
-        :root {
-            --bg: #0B132B; /* Dark deep space */
-            --surface: rgba(27, 38, 59, 0.45); /* Sleek slate glass */
-            --fg: #F4F6FC; /* Bright typography */
-            --fg-muted: #8E9AAF; /* Muted text */
-            --accent: #00B4D8; /* Electric blue */
-            --accent-glow: rgba(0, 180, 216, 0.25);
-            --border: rgba(255, 255, 255, 0.06);
-            --shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
-            --radius: 12px;
-            --radius-lg: 16px;
-            --font-sans: 'Inter', -apple-system, sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
-            
-            --success: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
+      :root {
+        --bg: #0b132b; /* Dark deep space */
+        --surface: rgba(27, 38, 59, 0.45); /* Sleek slate glass */
+        --fg: #f4f6fc; /* Bright typography */
+        --fg-muted: #8e9aaf; /* Muted text */
+        --accent: #00b4d8; /* Electric blue */
+        --accent-glow: rgba(0, 180, 216, 0.25);
+        --border: rgba(255, 255, 255, 0.06);
+        --shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
+        --radius: 12px;
+        --radius-lg: 16px;
+        --font-sans: "Inter", -apple-system, sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
 
-            /* severity / status palettes */
-            --red-bg: rgba(239, 68, 68, 0.15); --red-fg: #F87171;
-            --amber-bg: rgba(245, 158, 11, 0.15); --amber-fg: #FBBF24;
-            --green-bg: rgba(16, 185, 129, 0.15); --green-fg: #34D399;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+
+        /* severity / status palettes */
+        --red-bg: rgba(239, 68, 68, 0.15);
+        --red-fg: #f87171;
+        --amber-bg: rgba(245, 158, 11, 0.15);
+        --amber-fg: #fbbf24;
+        --green-bg: rgba(16, 185, 129, 0.15);
+        --green-fg: #34d399;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background-color: #070a13;
+        background-image:
+          radial-gradient(at 0% 0%, rgba(0, 180, 216, 0.15) 0px, transparent 60%),
+          radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 60%);
+        color: var(--fg);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* --- Sidebar --- */
+      .sidebar {
+        width: 320px;
+        background: rgba(10, 15, 30, 0.75);
+        backdrop-filter: blur(20px);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        padding: 36px 24px;
+        overflow-y: auto;
+      }
+
+      .logo {
+        font-weight: 800;
+        font-size: 20px;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 48px;
+        color: var(--fg);
+        text-transform: uppercase;
+      }
+
+      .logo-icon {
+        width: 26px;
+        height: 26px;
+        background: linear-gradient(135deg, var(--accent), var(--success));
+        border-radius: 6px;
+        box-shadow: 0 0 12px var(--accent);
+        position: relative;
+      }
+
+      .logo-icon::after {
+        content: "";
+        position: absolute;
+        top: 25%;
+        left: 25%;
+        width: 50%;
+        height: 50%;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+      }
+
+      .nav-group {
+        margin-bottom: 28px;
+      }
+      .nav-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--fg-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 16px;
+      }
+
+      .alert-item {
+        padding: 16px;
+        border-radius: var(--radius);
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .alert-item::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--danger);
+        box-shadow: 0 0 8px var(--danger);
+        transition: width 0.2s;
+      }
+
+      .alert-item:nth-child(2)::before {
+        background: var(--warning);
+        box-shadow: 0 0 8px var(--warning);
+      }
+
+      .alert-item.active {
+        background: rgba(0, 180, 216, 0.08);
+        color: var(--fg);
+        border-color: var(--accent);
+        box-shadow: 0 0 15px rgba(0, 180, 216, 0.1);
+      }
+
+      .alert-item.active::before {
+        width: 6px;
+        background: var(--accent);
+        box-shadow: 0 0 10px var(--accent);
+      }
+
+      .alert-item:not(.active):hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateX(4px);
+      }
+
+      .alert-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .alert-title {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .alert-meta {
+        font-size: 12px;
+        color: var(--fg-muted);
+        margin-top: 6px;
+        font-family: var(--font-mono);
+      }
+
+      /* severity badge */
+      .sev-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 99px;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+        text-transform: uppercase;
+      }
+      .sev-badge.sev-1 {
+        background: var(--red-bg);
+        color: var(--red-fg);
+        border: 1px solid rgba(239, 68, 68, 0.25);
+      }
+      .sev-badge.sev-2 {
+        background: var(--amber-bg);
+        color: var(--amber-fg);
+        border: 1px solid rgba(245, 158, 11, 0.25);
+      }
+      .sev-badge.sev-3 {
+        background: var(--green-bg);
+        color: var(--green-fg);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+      }
+
+      /* --- Main Content --- */
+      .main {
+        flex: 1;
+        padding: 48px 64px;
+        overflow-y: auto;
+        background: transparent;
+      }
+
+      .header {
+        max-width: 1000px;
+        margin-bottom: 40px;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 16px;
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        color: var(--warning);
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 99px;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .status-badge.resolved {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: rgba(16, 185, 129, 0.2);
+        color: var(--success);
+      }
+
+      .status-badge.escalated {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: rgba(239, 68, 68, 0.2);
+        color: var(--danger);
+      }
+
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        background: currentColor;
+        border-radius: 50%;
+        box-shadow: 0 0 8px currentColor;
+        animation: pulse 1.5s infinite ease-in-out;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(0.9);
+          opacity: 0.6;
         }
-
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            background-color: #070A13;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(0, 180, 216, 0.15) 0px, transparent 60%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 60%);
-            color: var(--fg);
-            font-family: var(--font-sans);
-            -webkit-font-smoothing: antialiased;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
+        50% {
+          transform: scale(1.15);
+          opacity: 1;
         }
-
-        /* --- Sidebar --- */
-        .sidebar {
-            width: 320px;
-            background: rgba(10, 15, 30, 0.75);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 36px 24px;
-            overflow-y: auto;
+        100% {
+          transform: scale(0.9);
+          opacity: 0.6;
         }
+      }
 
-        .logo {
-            font-weight: 800;
-            font-size: 20px;
-            letter-spacing: 0.05em;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 48px;
-            color: var(--fg);
-            text-transform: uppercase;
+      h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 12px 0;
+        color: var(--fg);
+      }
+
+      .description {
+        font-size: 15px;
+        color: var(--fg-muted);
+        line-height: 1.6;
+        max-width: 700px;
+      }
+
+      .meta-line {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--fg-muted);
+        margin-top: 12px;
+      }
+
+      /* --- Verdict Card --- */
+      .verdict-card {
+        background: var(--surface);
+        backdrop-filter: blur(16px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 32px;
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 32px;
+        max-width: 1000px;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 32px;
+        transition: all 0.3s ease;
+      }
+
+      .verdict-card:hover {
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .verdict-main h2,
+      .verdict-side h2 {
+        font-size: 12px;
+        color: var(--fg-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-top: 0;
+        margin-bottom: 16px;
+      }
+
+      .verdict-content {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.5;
+        color: var(--fg);
+        background: rgba(255, 255, 255, 0.02);
+        padding: 16px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+      }
+
+      .verdict-rootcause {
+        font-size: 14px;
+        color: var(--fg-muted);
+        margin-top: 14px;
+      }
+
+      .verdict-confidence {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--fg-muted);
+        margin-top: 10px;
+      }
+
+      .action-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .action-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        margin-bottom: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--fg);
+        transition: all 0.2s;
+      }
+      .action-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+        transform: translateX(4px);
+      }
+      .action-item .arrow {
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .section-label {
+        font-size: 13px;
+        color: var(--fg-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 32px 0 16px 0;
+        font-weight: 700;
+        max-width: 1000px;
+      }
+
+      /* --- Agent Grid --- */
+      .agent-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 24px;
+        max-width: 1000px;
+        margin-bottom: 32px;
+      }
+
+      .agent-card {
+        background: rgba(27, 38, 59, 0.3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .agent-card:hover {
+        transform: translateY(-4px);
+        background: rgba(27, 38, 59, 0.5);
+        border-color: rgba(0, 180, 216, 0.3);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .agent-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .agent-name {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--fg-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .finding-type {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .finding-type.alarm {
+        color: var(--danger);
+      }
+      .finding-type.warn {
+        color: var(--warning);
+      }
+
+      .agent-summary {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: var(--fg);
+      }
+      .agent-detail {
+        font-size: 13px;
+        color: var(--fg-muted);
+        line-height: 1.5;
+        margin-bottom: 18px;
+      }
+
+      .progress-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--fg-muted);
+        margin-bottom: 6px;
+      }
+      .progress-bar {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: var(--accent);
+        width: 0%;
+        box-shadow: 0 0 8px var(--accent);
+        transition: width 1s ease-out;
+      }
+
+      /* --- Deliberation feed --- */
+      .delib-panel {
+        background: rgba(30, 41, 59, 0.4);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        max-width: 1000px;
+        margin-top: 24px;
+        margin-bottom: 32px;
+        box-shadow: var(--shadow-lg);
+      }
+      .delib-panel h2 {
+        color: var(--fg-muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0 0 16px 0;
+      }
+      .delib-msg {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: #e2e8f0;
+        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+      .delib-msg .who {
+        color: #38bdf8;
+        font-weight: 600;
+      }
+      .delib-msg.metrics .who {
+        color: #4ade80;
+      }
+      .delib-msg.logs .who {
+        color: #facc15;
+      }
+      .delib-msg.change .who {
+        color: #38bdf8;
+      }
+      .delib-msg.runbook .who {
+        color: #c084fc;
+      }
+
+      /* --- Animations / utilities --- */
+      .hidden {
+        display: none !important;
+      }
+      .fade-in {
+        animation: fadeIn 0.5s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
         }
-
-        .logo-icon {
-            width: 26px;
-            height: 26px;
-            background: linear-gradient(135deg, var(--accent), var(--success));
-            border-radius: 6px;
-            box-shadow: 0 0 12px var(--accent);
-            position: relative;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
-        
-        .logo-icon::after {
-            content: '';
-            position: absolute;
-            top: 25%;
-            left: 25%;
-            width: 50%;
-            height: 50%;
-            background: rgba(255,255,255,0.8);
-            border-radius: 50%;
-        }
+      }
 
-        .nav-group { margin-bottom: 28px; }
-        .nav-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--fg-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 16px;
-        }
+      button.btn-primary {
+        background: linear-gradient(135deg, var(--accent), #0077b6);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 0.03em;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0, 180, 216, 0.2);
+        text-transform: uppercase;
+      }
 
-        .alert-item {
-            padding: 16px;
-            border-radius: var(--radius);
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
+      button.btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 180, 216, 0.35);
+        filter: brightness(1.1);
+      }
 
-        .alert-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--danger);
-            box-shadow: 0 0 8px var(--danger);
-            transition: width 0.2s;
-        }
+      button.btn-primary:disabled {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.2);
+        box-shadow: none;
+        cursor: not-allowed;
+        transform: none;
+      }
 
-        .alert-item:nth-child(2)::before {
-            background: var(--warning);
-            box-shadow: 0 0 8px var(--warning);
-        }
-
-        .alert-item.active {
-            background: rgba(0, 180, 216, 0.08);
-            color: var(--fg);
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(0, 180, 216, 0.1);
-        }
-
-        .alert-item.active::before {
-            width: 6px;
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent);
-        }
-
-        .alert-item:not(.active):hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.12);
-            transform: translateX(4px);
-        }
-
-        .alert-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .alert-title { font-size: 14px; font-weight: 600; }
-        .alert-meta { font-size: 12px; color: var(--fg-muted); margin-top: 6px; font-family: var(--font-mono); }
-
-        /* severity badge */
-        .sev-badge {
-            font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px;
-            letter-spacing: 0.03em; white-space: nowrap; text-transform: uppercase;
-        }
-        .sev-badge.sev-1 { background: var(--red-bg); color: var(--red-fg); border: 1px solid rgba(239, 68, 68, 0.25); }
-        .sev-badge.sev-2 { background: var(--amber-bg); color: var(--amber-fg); border: 1px solid rgba(245, 158, 11, 0.25); }
-        .sev-badge.sev-3 { background: var(--green-bg); color: var(--green-fg); border: 1px solid rgba(16, 185, 129, 0.25); }
-
-        /* --- Main Content --- */
-        .main {
-            flex: 1;
-            padding: 48px 64px;
-            overflow-y: auto;
-            background: transparent;
-        }
-
-        .header {
-            max-width: 1000px;
-            margin-bottom: 40px;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-            font-size: 11px;
-            font-weight: 700;
-            border-radius: 99px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .status-badge.resolved {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-
-        .status-badge.escalated {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-        }
-
-        .status-dot { 
-            width: 8px; 
-            height: 8px; 
-            background: currentColor; 
-            border-radius: 50%;
-            box-shadow: 0 0 8px currentColor;
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(0.9); opacity: 0.6; }
-            50% { transform: scale(1.15); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.6; }
-        }
-
-        h1 {
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            margin: 0 0 12px 0;
-            color: var(--fg);
-        }
-
-        .description {
-            font-size: 15px;
-            color: var(--fg-muted);
-            line-height: 1.6;
-            max-width: 700px;
-        }
-
-        .meta-line {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--fg-muted);
-            margin-top: 12px;
-        }
-
-        /* --- Verdict Card --- */
-        .verdict-card {
-            background: var(--surface);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 32px;
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 32px;
-            max-width: 1000px;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 32px;
-            transition: all 0.3s ease;
-        }
-        
-        .verdict-card:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .verdict-main h2, .verdict-side h2 { 
-            font-size: 12px; 
-            color: var(--fg-muted); 
-            text-transform: uppercase; 
-            letter-spacing: 0.1em; 
-            margin-top: 0;
-            margin-bottom: 16px; 
-        }
-
-        .verdict-content { 
-            font-size: 18px; 
-            font-weight: 600; 
-            line-height: 1.5; 
-            color: var(--fg); 
-            background: rgba(255, 255, 255, 0.02);
-            padding: 16px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-        }
-
-        .verdict-rootcause {
-            font-size: 14px;
-            color: var(--fg-muted);
-            margin-top: 14px;
-        }
-
-        .verdict-confidence {
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--fg-muted);
-            margin-top: 10px;
-        }
-
-        .action-list { list-style: none; padding: 0; margin: 0; }
-        .action-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--fg);
-            transition: all 0.2s;
-        }
-        .action-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.12);
-            transform: translateX(4px);
-        }
-        .action-item .arrow { color: var(--accent); font-weight: 700; }
-
-        .section-label {
-            font-size: 13px; color: var(--fg-muted); text-transform: uppercase;
-            letter-spacing: 0.1em; margin: 32px 0 16px 0; font-weight: 700; max-width: 1000px;
-        }
-
-        /* --- Agent Grid --- */
-        .agent-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-            gap: 24px;
-            max-width: 1000px;
-            margin-bottom: 32px;
-        }
-
-        .agent-card {
-            background: rgba(27, 38, 59, 0.3);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .agent-card:hover { 
-            transform: translateY(-4px); 
-            background: rgba(27, 38, 59, 0.5);
-            border-color: rgba(0, 180, 216, 0.3);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .agent-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .agent-name { font-size: 11px; font-weight: 700; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-        
-        .finding-type { font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .finding-type.alarm { color: var(--danger); }
-        .finding-type.warn { color: var(--warning); }
-
-        .agent-summary { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--fg); }
-        .agent-detail { font-size: 13px; color: var(--fg-muted); line-height: 1.5; margin-bottom: 18px; }
-
-        .progress-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--fg-muted); margin-bottom: 6px; }
-        .progress-bar { height: 4px; background: rgba(255, 255, 255, 0.06); border-radius: 2px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--accent); width: 0%; box-shadow: 0 0 8px var(--accent); transition: width 1s ease-out; }
-
-        /* --- Deliberation feed --- */
-        .delib-panel {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            max-width: 1000px;
-            margin-top: 24px;
-            margin-bottom: 32px;
-            box-shadow: var(--shadow-lg);
-        }
-        .delib-panel h2 { color: var(--fg-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 16px 0; }
-        .delib-msg { font-family: var(--font-mono); font-size: 13px; color: #E2E8F0; line-height: 1.5; margin-bottom: 10px; }
-        .delib-msg .who { color: #38BDF8; font-weight: 600; }
-        .delib-msg.metrics .who { color: #4ADE80; }
-        .delib-msg.logs .who { color: #FACC15; }
-        .delib-msg.change .who { color: #38BDF8; }
-        .delib-msg.runbook .who { color: #C084FC; }
-
-        /* --- Animations / utilities --- */
-        .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-
-        button.btn-primary {
-            background: linear-gradient(135deg, var(--accent), #0077B6);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 13px;
-            letter-spacing: 0.03em;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.2);
-            text-transform: uppercase;
-        }
-
-        button.btn-primary:hover:not(:disabled) { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 180, 216, 0.35);
-            filter: brightness(1.1);
-        }
-        
-        button.btn-primary:disabled {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.2);
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .empty-hint { color: var(--fg-muted); font-size: 14px; margin-top: 16px; }
-        .error-banner { color: #EF4444; background: rgba(239, 68, 68, 0.1); padding: 16px 20px; border-radius: 12px; max-width: 1000px; border: 1px solid rgba(239, 68, 68, 0.2); }
+      .empty-hint {
+        color: var(--fg-muted);
+        font-size: 14px;
+        margin-top: 16px;
+      }
+      .error-banner {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+        padding: 16px 20px;
+        border-radius: 12px;
+        max-width: 1000px;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="logo">
-            <div class="logo-icon"></div>
-            War Room Studio
-        </div>
+      <div class="logo">
+        <div class="logo-icon"></div>
+        War Room Studio
+      </div>
 
-        <div class="nav-group">
-            <div class="nav-label">Incident Scenarios</div>
-            <div id="scenario-list"><!-- rendered from WAR_ROOM_SCENARIOS --></div>
-        </div>
+      <div class="nav-group">
+        <div class="nav-label">Incident Scenarios</div>
+        <div id="scenario-list"><!-- rendered from WAR_ROOM_SCENARIOS --></div>
+      </div>
 
-        <button id="run-sim" class="btn-primary">▶ Execute Triage</button>
-        <div class="nav-label" style="margin-top:24px;">Coordinated via Band</div>
+      <button id="run-sim" class="btn-primary">▶ Execute Triage</button>
+      <div class="nav-label" style="margin-top: 24px">Coordinated via Band</div>
     </aside>
 
     <!-- MAIN -->
     <main class="main">
-        <div id="incident-room">
-            <div class="header fade-in">
-                <div class="title-row" style="display: flex; align-items: center; gap: 12px;">
-                    <div class="status-badge" id="status-badge">
-                        <div class="status-dot"></div>
-                        <span id="status-text">Ready</span>
-                    </div>
-                    <span class="sev-badge" id="header-sev"></span>
-                </div>
-                <h1 id="incident-title">Select an incident</h1>
-                <p class="description" id="incident-desc"></p>
-                <div class="meta-line" id="incident-meta"></div>
+      <div id="incident-room">
+        <div class="header fade-in">
+          <div class="title-row" style="display: flex; align-items: center; gap: 12px">
+            <div class="status-badge" id="status-badge">
+              <div class="status-dot"></div>
+              <span id="status-text">Ready</span>
             </div>
-
-            <div id="verdict-section" class="verdict-card hidden">
-                <div class="verdict-main">
-                    <h2>Resolution Strategy</h2>
-                    <div class="verdict-content" id="verdict-msg"></div>
-                    <div class="verdict-rootcause" id="verdict-rootcause"></div>
-                    <div class="verdict-confidence" id="verdict-confidence"></div>
-                </div>
-                <div class="verdict-side">
-                    <h2>Recommended Actions</h2>
-                    <div id="action-list" class="action-list"></div>
-                </div>
-            </div>
-
-            <!-- REMEDIATION PANEL -->
-            <div id="remediation-section" class="verdict-card hidden" style="grid-template-columns: 1fr; margin-top: 24px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px;">
-                    <div>
-                        <h2 style="margin: 0; font-size: 14px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.1em;">Remediation Engine</h2>
-                        <div id="remediation-status" style="font-size: 18px; font-weight: 600; color: var(--fg); margin-top: 4px;">Pending Human Approval</div>
-                    </div>
-                    <button id="run-remediation" class="btn-primary" style="margin: 0;">▶ Run Remediation</button>
-                </div>
-                <div id="remediation-actions-container" class="hidden">
-                    <h2 style="font-size: 12px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Executing Actions</h2>
-                    <div id="remediation-steps" style="display: flex; flex-direction: column; gap: 12px;">
-                        <!-- Steps will be generated here -->
-                    </div>
-                </div>
-                <div id="resolved-banner" class="hidden" style="background: #D1FAE5; border: 1px solid #10B981; border-radius: 12px; padding: 20px; display: flex; align-items: center; justify-content: space-between; margin-top: 16px; animation: fadeIn 0.4s ease;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 24px;">✅</span>
-                        <div>
-                            <div style="font-size: 16px; font-weight: 700; color: #065F46;">Incident Resolved Successfully</div>
-                            <div style="font-size: 14px; color: #047857;">All automated remediation procedures completed.</div>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 12px; font-weight: 600; color: #047857; text-transform: uppercase;">Simulated MTTR</div>
-                        <div id="mttr-display" style="font-size: 24px; font-weight: 800; color: #065F46;">--</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- POSTMORTEM PANEL -->
-            <div id="postmortem-section" class="verdict-card hidden" style="grid-template-columns: 1fr; margin-top: 24px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 16px;">
-                    <div>
-                        <h2 style="margin: 0; font-size: 14px; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.1em;">Incident Documentation</h2>
-                        <div style="font-size: 18px; font-weight: 600; color: var(--fg); margin-top: 4px;">📄 Generated Postmortem Report</div>
-                    </div>
-                    <button id="commit-to-git" class="btn-primary" style="margin: 0; background: var(--accent);">Commit to Git</button>
-                </div>
-                
-                <div id="git-output-container" class="hidden" style="background: #090D16; border-radius: 10px; padding: 20px; font-family: var(--font-mono); font-size: 13px; color: #E2E8F0; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8); position: relative; max-height: 250px; overflow-y: auto; text-align: left; padding-top: 32px;">
-                    <!-- Window control dots -->
-                    <div style="position: absolute; top: 12px; left: 15px; display: flex; gap: 6px;">
-                        <span style="width: 10px; height: 10px; background: #FF5F56; border-radius: 50%;"></span>
-                        <span style="width: 10px; height: 10px; background: #FFBD2E; border-radius: 50%;"></span>
-                        <span style="width: 10px; height: 10px; background: #27C93F; border-radius: 50%;"></span>
-                    </div>
-                    <div id="git-terminal-lines"></div>
-                </div>
-
-                <div id="postmortem-content" style="background: #F9FAFB; border: 1px solid var(--border); border-radius: 12px; padding: 24px; font-size: 14px; line-height: 1.6; max-height: 400px; overflow-y: auto; text-align: left;">
-                    <!-- Rendered Postmortem HTML will go here -->
-                </div>
-            </div>
-
-            <div id="agents-label" class="section-label hidden">Agent Triage — live findings on #triage-findings</div>
-            <div class="agent-grid" id="agent-grid">
-                <div class="empty-hint" id="grid-hint">Press <strong>Execute Triage</strong> to dispatch the agent band.</div>
-            </div>
-
-            <div id="delib-section" class="delib-panel hidden">
-                <h2>#deliberation — agent cross-talk</h2>
-                <div id="delib-list"></div>
-            </div>
+            <span class="sev-badge" id="header-sev"></span>
+          </div>
+          <h1 id="incident-title">Select an incident</h1>
+          <p class="description" id="incident-desc"></p>
+          <div class="meta-line" id="incident-meta"></div>
         </div>
 
-        <div id="boot-error" class="hidden">
-            <div class="error-banner">
-                Could not load <code>scenarios.js</code>. Generate it first:
-                <code>python demo/gen_dashboard_data.py</code>
-            </div>
+        <div id="verdict-section" class="verdict-card hidden">
+          <div class="verdict-main">
+            <h2>Resolution Strategy</h2>
+            <div class="verdict-content" id="verdict-msg"></div>
+            <div class="verdict-rootcause" id="verdict-rootcause"></div>
+            <div class="verdict-confidence" id="verdict-confidence"></div>
+          </div>
+          <div class="verdict-side">
+            <h2>Recommended Actions</h2>
+            <div id="action-list" class="action-list"></div>
+          </div>
         </div>
+
+        <!-- REMEDIATION PANEL -->
+        <div
+          id="remediation-section"
+          class="verdict-card hidden"
+          style="grid-template-columns: 1fr; margin-top: 24px"
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 1px solid var(--border);
+              padding-bottom: 16px;
+              margin-bottom: 16px;
+            "
+          >
+            <div>
+              <h2
+                style="
+                  margin: 0;
+                  font-size: 14px;
+                  color: var(--fg-muted);
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                "
+              >
+                Remediation Engine
+              </h2>
+              <div
+                id="remediation-status"
+                style="font-size: 18px; font-weight: 600; color: var(--fg); margin-top: 4px"
+              >
+                Pending Human Approval
+              </div>
+            </div>
+            <button id="run-remediation" class="btn-primary" style="margin: 0">
+              ▶ Run Remediation
+            </button>
+          </div>
+          <div id="remediation-actions-container" class="hidden">
+            <h2
+              style="
+                font-size: 12px;
+                color: var(--fg-muted);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 12px;
+              "
+            >
+              Executing Actions
+            </h2>
+            <div id="remediation-steps" style="display: flex; flex-direction: column; gap: 12px">
+              <!-- Steps will be generated here -->
+            </div>
+          </div>
+          <div
+            id="resolved-banner"
+            class="hidden"
+            style="
+              background: #d1fae5;
+              border: 1px solid #10b981;
+              border-radius: 12px;
+              padding: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-top: 16px;
+              animation: fadeIn 0.4s ease;
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span style="font-size: 24px">✅</span>
+              <div>
+                <div style="font-size: 16px; font-weight: 700; color: #065f46">
+                  Incident Resolved Successfully
+                </div>
+                <div style="font-size: 14px; color: #047857">
+                  All automated remediation procedures completed.
+                </div>
+              </div>
+            </div>
+            <div style="text-align: right">
+              <div
+                style="font-size: 12px; font-weight: 600; color: #047857; text-transform: uppercase"
+              >
+                Simulated MTTR
+              </div>
+              <div id="mttr-display" style="font-size: 24px; font-weight: 800; color: #065f46">
+                --
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- POSTMORTEM PANEL -->
+        <div
+          id="postmortem-section"
+          class="verdict-card hidden"
+          style="grid-template-columns: 1fr; margin-top: 24px"
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 1px solid var(--border);
+              padding-bottom: 16px;
+              margin-bottom: 16px;
+            "
+          >
+            <div>
+              <h2
+                style="
+                  margin: 0;
+                  font-size: 14px;
+                  color: var(--fg-muted);
+                  text-transform: uppercase;
+                  letter-spacing: 0.1em;
+                "
+              >
+                Incident Documentation
+              </h2>
+              <div style="font-size: 18px; font-weight: 600; color: var(--fg); margin-top: 4px">
+                📄 Generated Postmortem Report
+              </div>
+            </div>
+            <button
+              id="commit-to-git"
+              class="btn-primary"
+              style="margin: 0; background: var(--accent)"
+            >
+              Commit to Git
+            </button>
+          </div>
+
+          <div
+            id="git-output-container"
+            class="hidden"
+            style="
+              background: #090d16;
+              border-radius: 10px;
+              padding: 20px;
+              font-family: var(--font-mono);
+              font-size: 13px;
+              color: #e2e8f0;
+              margin-bottom: 20px;
+              border: 1px solid rgba(255, 255, 255, 0.05);
+              box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.8);
+              position: relative;
+              max-height: 250px;
+              overflow-y: auto;
+              text-align: left;
+              padding-top: 32px;
+            "
+          >
+            <!-- Window control dots -->
+            <div style="position: absolute; top: 12px; left: 15px; display: flex; gap: 6px">
+              <span
+                style="width: 10px; height: 10px; background: #ff5f56; border-radius: 50%"
+              ></span>
+              <span
+                style="width: 10px; height: 10px; background: #ffbd2e; border-radius: 50%"
+              ></span>
+              <span
+                style="width: 10px; height: 10px; background: #27c93f; border-radius: 50%"
+              ></span>
+            </div>
+            <div id="git-terminal-lines"></div>
+          </div>
+
+          <div
+            id="postmortem-content"
+            style="
+              background: #f9fafb;
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              padding: 24px;
+              font-size: 14px;
+              line-height: 1.6;
+              max-height: 400px;
+              overflow-y: auto;
+              text-align: left;
+            "
+          >
+            <!-- Rendered Postmortem HTML will go here -->
+          </div>
+        </div>
+
+        <div id="agents-label" class="section-label hidden">
+          Agent Triage — live findings on #triage-findings
+        </div>
+        <div class="agent-grid" id="agent-grid">
+          <div class="empty-hint" id="grid-hint">
+            Press <strong>Execute Triage</strong> to dispatch the agent band.
+          </div>
+        </div>
+
+        <div id="delib-section" class="delib-panel hidden">
+          <h2>#deliberation — agent cross-talk</h2>
+          <div id="delib-list"></div>
+        </div>
+      </div>
+
+      <div id="boot-error" class="hidden">
+        <div class="error-banner">
+          Could not load <code>scenarios.js</code>. Generate it first:
+          <code>python demo/gen_dashboard_data.py</code>
+        </div>
+      </div>
     </main>
 
     <!-- Real pipeline output, generated by demo/gen_dashboard_data.py -->
     <script src="scenarios.js"></script>
     <script>
-        const DATA = window.WAR_ROOM_SCENARIOS;
-        let activeId = null;
+      const DATA = window.WAR_ROOM_SCENARIOS;
+      let activeId = null;
 
-        // finding types that should read as alarming vs cautionary
-        const ALARM_TYPES = new Set(["anomaly", "log_anomaly", "change_correlation"]);
-        const WARN_TYPES = new Set(["runbook_match", "observation", "log_observation"]);
+      // finding types that should read as alarming vs cautionary
+      const ALARM_TYPES = new Set(["anomaly", "log_anomaly", "change_correlation"]);
+      const WARN_TYPES = new Set(["runbook_match", "observation", "log_observation"]);
 
-        const REMEDIATION_DB = {
-            "Rollback last deployment": {
-                description: "Reverting the application version to the previous stable release.",
-                command: "git-ops rollback --env prod --deploy 847",
-                severity: "CRITICAL",
-                duration: 2.5
-            },
-            "Check container logs for specific crash reason": {
-                description: "Querying stderr from active containers to extract crash logs.",
-                command: "kubectl logs -l app=api-gateway --tail=100 -n prod",
-                severity: "AUTO",
-                duration: 1.2
-            },
-            "Scale up resources": {
-                description: "Increasing the deployment replicas to distribute latency load.",
-                command: "kubectl scale deployment api-gateway --replicas=4 -n prod",
-                severity: "AUTO",
-                duration: 1.8
-            },
-            "Inspect underlying infrastructure health": {
-                description: "Querying cloud provider metrics for network or disk anomalies.",
-                command: "aws ec2 describe-instance-status --region us-east-1",
-                severity: "AUTO",
-                duration: 1.0
-            },
-            "Monitor service closely": {
-                description: "Enabling high-frequency logging and healthchecks on the service.",
-                command: "datadog-cli monitor status --id check-api-gateway",
-                severity: "AUTO",
-                duration: 1.5
-            },
-            "Close incident if symptoms subside": {
-                description: "Auto-closing incident ticket and resolving active pager alerts.",
-                command: "pd-cli incident resolve --id inc-001",
-                severity: "AUTO",
-                duration: 0.8
-            }
+      const REMEDIATION_DB = {
+        "Rollback last deployment": {
+          description: "Reverting the application version to the previous stable release.",
+          command: "git-ops rollback --env prod --deploy 847",
+          severity: "CRITICAL",
+          duration: 2.5,
+        },
+        "Check container logs for specific crash reason": {
+          description: "Querying stderr from active containers to extract crash logs.",
+          command: "kubectl logs -l app=api-gateway --tail=100 -n prod",
+          severity: "AUTO",
+          duration: 1.2,
+        },
+        "Scale up resources": {
+          description: "Increasing the deployment replicas to distribute latency load.",
+          command: "kubectl scale deployment api-gateway --replicas=4 -n prod",
+          severity: "AUTO",
+          duration: 1.8,
+        },
+        "Inspect underlying infrastructure health": {
+          description: "Querying cloud provider metrics for network or disk anomalies.",
+          command: "aws ec2 describe-instance-status --region us-east-1",
+          severity: "AUTO",
+          duration: 1.0,
+        },
+        "Monitor service closely": {
+          description: "Enabling high-frequency logging and healthchecks on the service.",
+          command: "datadog-cli monitor status --id check-api-gateway",
+          severity: "AUTO",
+          duration: 1.5,
+        },
+        "Close incident if symptoms subside": {
+          description: "Auto-closing incident ticket and resolving active pager alerts.",
+          command: "pd-cli incident resolve --id inc-001",
+          severity: "AUTO",
+          duration: 0.8,
+        },
+      };
+
+      function getRemediationAction(name) {
+        for (const key in REMEDIATION_DB) {
+          if (
+            name.toLowerCase().includes(key.toLowerCase()) ||
+            key.toLowerCase().includes(name.toLowerCase())
+          ) {
+            return { name, ...REMEDIATION_DB[key] };
+          }
+        }
+        return {
+          name: name,
+          description: `Executing recommended step: ${name}`,
+          command: `run-mitigation --task "${name}"`,
+          severity: "AUTO",
+          duration: 1.0,
         };
+      }
 
-        function getRemediationAction(name) {
-            for (const key in REMEDIATION_DB) {
-                if (name.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(name.toLowerCase())) {
-                    return { name, ...REMEDIATION_DB[key] };
-                }
-            }
-            return {
-                name: name,
-                description: `Executing recommended step: ${name}`,
-                command: `run-mitigation --task "${name}"`,
-                severity: "AUTO",
-                duration: 1.0
-            };
-        }
+      function el(tag, className, text) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      }
 
-        function el(tag, className, text) {
-            const node = document.createElement(tag);
-            if (className) node.className = className;
-            if (text !== undefined) node.textContent = text;
-            return node;
-        }
+      function renderSidebar() {
+        const list = document.getElementById("scenario-list");
+        list.innerHTML = "";
+        DATA.order.forEach((id) => {
+          const s = DATA.scenarios[id];
+          const item = el("div", "alert-item");
+          item.dataset.id = id;
 
-        function renderSidebar() {
-            const list = document.getElementById('scenario-list');
-            list.innerHTML = '';
-            DATA.order.forEach(id => {
-                const s = DATA.scenarios[id];
-                const item = el('div', 'alert-item');
-                item.dataset.id = id;
-                
-                const title = el('div', 'alert-title', s.title);
-                const meta = el('div', 'alert-meta', s.id + ' • ' + s.service);
-                
-                item.appendChild(title);
-                item.appendChild(meta);
-                item.addEventListener('click', () => selectScenario(id, false));
-                list.appendChild(item);
-            });
-        }
+          const title = el("div", "alert-title", s.title);
+          const meta = el("div", "alert-meta", s.id + " • " + s.service);
 
-        function markActive(id) {
-            document.querySelectorAll('.alert-item').forEach(node => {
-                node.classList.toggle('active', node.dataset.id === id);
-            });
-        }
+          item.appendChild(title);
+          item.appendChild(meta);
+          item.addEventListener("click", () => selectScenario(id, false));
+          list.appendChild(item);
+        });
+      }
 
-        function renderHeader(s) {
-            document.getElementById('incident-title').textContent = s.title;
-            document.getElementById('incident-desc').textContent = s.description;
-            document.getElementById('incident-meta').textContent =
-                s.id + '  ·  ' + s.service + '  ·  window ' + s.timeWindow;
-            const sev = document.getElementById('header-sev');
-            sev.textContent = s.sevLabel;
-            sev.className = 'sev-badge ' + s.sevClass;
-        }
+      function markActive(id) {
+        document.querySelectorAll(".alert-item").forEach((node) => {
+          node.classList.toggle("active", node.dataset.id === id);
+        });
+      }
 
-        function setStatus(text, statusClass) {
-            const badge = document.getElementById('status-badge');
-            badge.className = 'status-badge ' + (statusClass || '');
-            document.getElementById('status-text').textContent = text;
-        }
+      function renderHeader(s) {
+        document.getElementById("incident-title").textContent = s.title;
+        document.getElementById("incident-desc").textContent = s.description;
+        document.getElementById("incident-meta").textContent =
+          s.id + "  ·  " + s.service + "  ·  window " + s.timeWindow;
+        const sev = document.getElementById("header-sev");
+        sev.textContent = s.sevLabel;
+        sev.className = "sev-badge " + s.sevClass;
+      }
 
-        // Select a scenario; when run=true, reset the view and re-run triage.
-        function selectScenario(id, run) {
-            activeId = id;
-            const s = DATA.scenarios[id];
-            markActive(id);
-            renderHeader(s);
-            resetView();
-            if (run) runTriage();
-        }
+      function setStatus(text, statusClass) {
+        const badge = document.getElementById("status-badge");
+        badge.className = "status-badge " + (statusClass || "");
+        document.getElementById("status-text").textContent = text;
+      }
 
-        function resetView() {
-            document.getElementById('verdict-section').classList.add('hidden');
-            document.getElementById('remediation-section').classList.add('hidden');
-            document.getElementById('postmortem-section').classList.add('hidden');
-            document.getElementById('delib-section').classList.add('hidden');
-            document.getElementById('agents-label').classList.add('hidden');
-            const grid = document.getElementById('agent-grid');
-            grid.innerHTML = '';
-            grid.appendChild(el('div', 'empty-hint', 'Dispatching agents…'));
-        }
+      // Select a scenario; when run=true, reset the view and re-run triage.
+      function selectScenario(id, run) {
+        activeId = id;
+        const s = DATA.scenarios[id];
+        markActive(id);
+        renderHeader(s);
+        resetView();
+        if (run) runTriage();
+      }
 
-        function agentCard(a) {
-            const card = el('div', 'agent-card fade-in');
+      function resetView() {
+        document.getElementById("verdict-section").classList.add("hidden");
+        document.getElementById("remediation-section").classList.add("hidden");
+        document.getElementById("postmortem-section").classList.add("hidden");
+        document.getElementById("delib-section").classList.add("hidden");
+        document.getElementById("agents-label").classList.add("hidden");
+        const grid = document.getElementById("agent-grid");
+        grid.innerHTML = "";
+        grid.appendChild(el("div", "empty-hint", "Dispatching agents…"));
+      }
 
-            const head = el('div', 'agent-header');
-            head.appendChild(el('span', 'agent-name', a.name + ' Agent'));
-            let ftClass = 'finding-type';
-            if (ALARM_TYPES.has(a.findingType)) ftClass += ' alarm';
-            else if (WARN_TYPES.has(a.findingType)) ftClass += ' warn';
-            head.appendChild(el('span', ftClass, a.findingType));
-            card.appendChild(head);
+      function agentCard(a) {
+        const card = el("div", "agent-card fade-in");
 
-            card.appendChild(el('div', 'agent-summary', a.summary));
-            card.appendChild(el('div', 'agent-detail', a.detail));
+        const head = el("div", "agent-header");
+        head.appendChild(el("span", "agent-name", a.name + " Agent"));
+        let ftClass = "finding-type";
+        if (ALARM_TYPES.has(a.findingType)) ftClass += " alarm";
+        else if (WARN_TYPES.has(a.findingType)) ftClass += " warn";
+        head.appendChild(el("span", ftClass, a.findingType));
+        card.appendChild(head);
 
-            const meta = el('div', 'progress-meta');
-            meta.appendChild(el('span', null, 'confidence'));
-            meta.appendChild(el('span', null, Math.round(a.confidence * 100) + '%'));
-            card.appendChild(meta);
+        card.appendChild(el("div", "agent-summary", a.summary));
+        card.appendChild(el("div", "agent-detail", a.detail));
 
-            const bar = el('div', 'progress-bar');
-            const fill = el('div', 'progress-fill');
-            bar.appendChild(fill);
-            card.appendChild(bar);
+        const meta = el("div", "progress-meta");
+        meta.appendChild(el("span", null, "confidence"));
+        meta.appendChild(el("span", null, Math.round(a.confidence * 100) + "%"));
+        card.appendChild(meta);
 
-            // animate the confidence bar after insertion
-            setTimeout(() => { fill.style.width = Math.round(a.confidence * 100) + '%'; }, 80);
-            return card;
-        }
+        const bar = el("div", "progress-bar");
+        const fill = el("div", "progress-fill");
+        bar.appendChild(fill);
+        card.appendChild(bar);
 
-        function runTriage() {
-            const s = DATA.scenarios[activeId];
-            const grid = document.getElementById('agent-grid');
-            const runBtn = document.getElementById('run-sim');
+        // animate the confidence bar after insertion
+        setTimeout(() => {
+          fill.style.width = Math.round(a.confidence * 100) + "%";
+        }, 80);
+        return card;
+      }
 
-            runBtn.disabled = true;
-            document.getElementById('verdict-section').classList.add('hidden');
-            document.getElementById('remediation-section').classList.add('hidden');
-            document.getElementById('postmortem-section').classList.add('hidden');
-            document.getElementById('delib-section').classList.add('hidden');
-            document.getElementById('agents-label').classList.remove('hidden');
-            setStatus('Triage in Progress', 'mitigating');
-            grid.innerHTML = '';
+      function runTriage() {
+        const s = DATA.scenarios[activeId];
+        const grid = document.getElementById("agent-grid");
+        const runBtn = document.getElementById("run-sim");
 
-            s.agents.forEach((a, i) => {
-                setTimeout(() => {
-                    grid.appendChild(agentCard(a));
-                    if (i === s.agents.length - 1) setTimeout(() => showVerdict(s), 900);
-                }, i * 850);
-            });
-        }
+        runBtn.disabled = true;
+        document.getElementById("verdict-section").classList.add("hidden");
+        document.getElementById("remediation-section").classList.add("hidden");
+        document.getElementById("postmortem-section").classList.add("hidden");
+        document.getElementById("delib-section").classList.add("hidden");
+        document.getElementById("agents-label").classList.remove("hidden");
+        setStatus("Triage in Progress", "mitigating");
+        grid.innerHTML = "";
 
-        function showVerdict(s) {
-            const v = document.getElementById('verdict-section');
-            v.classList.remove('hidden');
-            v.classList.add('fade-in');
+        s.agents.forEach((a, i) => {
+          setTimeout(() => {
+            grid.appendChild(agentCard(a));
+            if (i === s.agents.length - 1) setTimeout(() => showVerdict(s), 900);
+          }, i * 850);
+        });
+      }
 
-            document.getElementById('verdict-msg').textContent = s.verdict;
-            document.getElementById('verdict-rootcause').textContent = 'Root cause: ' + s.rootCause;
-            document.getElementById('verdict-confidence').textContent =
-                'confidence ' + s.confidence.toFixed(2) + '  ·  ' + s.sevLabel + '  ·  ' + s.statusLabel;
+      function showVerdict(s) {
+        const v = document.getElementById("verdict-section");
+        v.classList.remove("hidden");
+        v.classList.add("fade-in");
 
-            const list = document.getElementById('action-list');
-            list.innerHTML = '';
-            s.remediation.forEach(act => {
-                const item = el('div', 'action-item');
-                item.appendChild(el('span', 'arrow', '→'));
-                item.appendChild(el('span', null, act));
-                list.appendChild(item);
-            });
+        document.getElementById("verdict-msg").textContent = s.verdict;
+        document.getElementById("verdict-rootcause").textContent = "Root cause: " + s.rootCause;
+        document.getElementById("verdict-confidence").textContent =
+          "confidence " + s.confidence.toFixed(2) + "  ·  " + s.sevLabel + "  ·  " + s.statusLabel;
 
-            setStatus(s.statusLabel, s.status);
-            renderDeliberation(s);
-            document.getElementById('run-sim').disabled = false;
+        const list = document.getElementById("action-list");
+        list.innerHTML = "";
+        s.remediation.forEach((act) => {
+          const item = el("div", "action-item");
+          item.appendChild(el("span", "arrow", "→"));
+          item.appendChild(el("span", null, act));
+          list.appendChild(item);
+        });
 
-            // Show remediation panel
-            const remSec = document.getElementById('remediation-section');
-            remSec.classList.remove('hidden');
-            remSec.classList.add('fade-in');
-            
-            // Reset remediation states
-            const btn = document.getElementById('run-remediation');
-            btn.classList.remove('hidden');
-            btn.disabled = false;
-            btn.innerText = '▶ Run Remediation';
-            document.getElementById('remediation-status').innerText = 'Pending Human Approval';
-            document.getElementById('remediation-actions-container').classList.add('hidden');
-            document.getElementById('resolved-banner').classList.add('hidden');
-        }
+        setStatus(s.statusLabel, s.status);
+        renderDeliberation(s);
+        document.getElementById("run-sim").disabled = false;
 
-        function renderDeliberation(s) {
-            if (!s.deliberation || s.deliberation.length === 0) return;
-            const section = document.getElementById('delib-section');
-            const list = document.getElementById('delib-list');
-            list.innerHTML = '';
-            s.deliberation.forEach(m => {
-                const who = (m.sender || '').replace('-agent', '');
-                const msg = el('div', 'delib-msg ' + who);
-                const label = el('span', 'who', '@' + (m.sender || 'agent') + ': ');
-                msg.appendChild(label);
-                msg.appendChild(document.createTextNode(m.content));
-                list.appendChild(msg);
-            });
-            section.classList.remove('hidden');
-            section.classList.add('fade-in');
-        }
+        // Show remediation panel
+        const remSec = document.getElementById("remediation-section");
+        remSec.classList.remove("hidden");
+        remSec.classList.add("fade-in");
 
-        function animateProgress(progressBarFill, duration, onComplete) {
-            let start = null;
-            function step(timestamp) {
-                if (!start) start = timestamp;
-                let progress = (timestamp - start) / (duration * 1000);
-                if (progress < 1) {
-                    progressBarFill.style.width = (progress * 100) + '%';
-                    window.requestAnimationFrame(step);
-                } else {
-                    progressBarFill.style.width = '100%';
-                    onComplete();
-                }
-            }
+        // Reset remediation states
+        const btn = document.getElementById("run-remediation");
+        btn.classList.remove("hidden");
+        btn.disabled = false;
+        btn.innerText = "▶ Run Remediation";
+        document.getElementById("remediation-status").innerText = "Pending Human Approval";
+        document.getElementById("remediation-actions-container").classList.add("hidden");
+        document.getElementById("resolved-banner").classList.add("hidden");
+      }
+
+      function renderDeliberation(s) {
+        if (!s.deliberation || s.deliberation.length === 0) return;
+        const section = document.getElementById("delib-section");
+        const list = document.getElementById("delib-list");
+        list.innerHTML = "";
+        s.deliberation.forEach((m) => {
+          const who = (m.sender || "").replace("-agent", "");
+          const msg = el("div", "delib-msg " + who);
+          const label = el("span", "who", "@" + (m.sender || "agent") + ": ");
+          msg.appendChild(label);
+          msg.appendChild(document.createTextNode(m.content));
+          list.appendChild(msg);
+        });
+        section.classList.remove("hidden");
+        section.classList.add("fade-in");
+      }
+
+      function animateProgress(progressBarFill, duration, onComplete) {
+        let start = null;
+        function step(timestamp) {
+          if (!start) start = timestamp;
+          let progress = (timestamp - start) / (duration * 1000);
+          if (progress < 1) {
+            progressBarFill.style.width = progress * 100 + "%";
             window.requestAnimationFrame(step);
+          } else {
+            progressBarFill.style.width = "100%";
+            onComplete();
+          }
         }
+        window.requestAnimationFrame(step);
+      }
 
-        function generatePostmortemJS(s, mttr) {
-            const dateStr = new Date().toISOString().split('T')[0];
-            
-            let remediationChecklist = "";
-            s.remediation.forEach(act => {
-                remediationChecklist += `- [x] {act}\n`;
-            });
-            
-            let evidenceTrail = "";
-            s.agents.forEach(a => {
-                evidenceTrail += `- **EVD-${a.name.substring(0,2).toUpperCase()}**: ${a.name.toLowerCase()}-agent (${a.findingType} - ${a.summary})\n`;
-            });
-            
-            return `# Postmortem: ${s.id} — ${dateStr}
+      function generatePostmortemJS(s, mttr) {
+        const dateStr = new Date().toISOString().split("T")[0];
+
+        let remediationChecklist = "";
+        s.remediation.forEach((act) => {
+          remediationChecklist += `- [x] {act}\n`;
+        });
+
+        let evidenceTrail = "";
+        s.agents.forEach((a) => {
+          evidenceTrail += `- **EVD-${a.name.substring(0, 2).toUpperCase()}**: ${a.name.toLowerCase()}-agent (${a.findingType} - ${a.summary})\n`;
+        });
+
+        return `# Postmortem: ${s.id} — ${dateStr}
 
 ## Summary
 ${s.verdict}
@@ -846,100 +1137,137 @@ ${evidenceTrail.trim()}
 2. [ ] Review and update runbook instructions for ${s.sevLabel} incidents.
 3. [ ] Configure high-frequency alerting thresholds on affected metrics.
 `;
-        }
+      }
 
-        function renderMarkdownToHtml(md) {
-            let html = md;
-            
-            // Convert headers
-            html = html.replace(/^# (.*?)$/gm, '<h1 style="font-size: 20px; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 0; margin-bottom: 16px; color: var(--fg);">$1</h1>');
-            html = html.replace(/^## (.*?)$/gm, '<h2 style="font-size: 15px; font-weight: 700; margin-top: 20px; margin-bottom: 10px; color: var(--fg); border-bottom: 1px dashed var(--border); padding-bottom: 4px;">$1</h2>');
-            
-            // Convert bold
-            html = html.replace(/\*\*(.*?)\*\"/g, '<strong>$1</strong>');
-            
-            // Convert checklists
-            html = html.replace(/^- \[x\] (.*?)$/gm, '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px;"><input type="checkbox" checked disabled> <span style="text-decoration: line-through; color: var(--fg-muted);">$1</span></div>');
-            html = html.replace(/^- \[ \] (.*?)$/gm, '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px;"><input type="checkbox" disabled> <span>$1</span></div>');
-            
-            // Convert bullets
-            html = html.replace(/^- (.*?)$/gm, '<li style="margin-left: 16px; margin-bottom: 6px; font-size: 13px; color: var(--fg);">$1</li>');
-            
-            // Convert numbered lists
-            html = html.replace(/^\d+\. \[ \]\s*(.*?)$/gm, '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding-left: 8px; font-size: 13px;"><input type="checkbox" disabled> <span>$1</span></div>');
-            
-            // Format paragraphs
-            html = html.split('\n\n').map(p => {
-                if (p.trim().startsWith('<h') || p.trim().startsWith('<div') || p.trim().startsWith('<li') || p.trim().startsWith('<ul')) {
-                    return p;
-                }
-                return `<p style="margin: 0 0 10px 0; font-size: 13px; color: var(--fg-muted);">${p.replace(/\n/g, '<br>')}</p>`;
-            }).join('\n');
-            
-            return html;
-        }
+      function renderMarkdownToHtml(md) {
+        let html = md;
 
-        async function commitToGitSim() {
-            const s = DATA.scenarios[activeId];
-            const btn = document.getElementById('commit-to-git');
-            btn.disabled = true;
-            btn.innerText = 'Committed';
-            
-            const gitContainer = document.getElementById('git-output-container');
-            gitContainer.classList.remove('hidden');
-            
-            const term = document.getElementById('git-terminal-lines');
-            term.innerHTML = '';
-            
-            const lines = [
-                { text: "$ git status", delay: 300, color: "#9CA3AF" },
-                { text: `On branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tpostmortems/${s.id}/\n\nnothing added to commit but untracked files present (use "git add" to track)`, delay: 800 },
-                { text: `$ git add postmortems/${s.id}/`, delay: 500, color: "#9CA3AF" },
-                { text: `$ git commit -m "docs: postmortem ${s.id}"`, delay: 600, color: "#9CA3AF" },
-                { text: `[main abc1234] docs: postmortem ${s.id}\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/${s.id}/postmortem.md`, delay: 800, color: "#10B981" },
-                { text: `🔗 Commit URL: <a href="https://github.com/vib3withsimran/The-war-room/commit/abc1234" target="_blank" style="color: #60A5FA; text-decoration: underline;">https://github.com/vib3withsimran/The-war-room/commit/abc1234</a>`, delay: 300 }
-            ];
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i];
-                await new Promise(resolve => setTimeout(resolve, line.delay));
-                const div = document.createElement('div');
-                div.style.marginBottom = '8px';
-                div.style.whiteSpace = 'pre-wrap';
-                if (line.color) {
-                    div.style.color = line.color;
-                }
-                div.innerHTML = line.text;
-                term.appendChild(div);
-                gitContainer.scrollTop = gitContainer.scrollHeight;
+        // Convert headers
+        html = html.replace(
+          /^# (.*?)$/gm,
+          '<h1 style="font-size: 20px; font-weight: 800; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 0; margin-bottom: 16px; color: var(--fg);">$1</h1>'
+        );
+        html = html.replace(
+          /^## (.*?)$/gm,
+          '<h2 style="font-size: 15px; font-weight: 700; margin-top: 20px; margin-bottom: 10px; color: var(--fg); border-bottom: 1px dashed var(--border); padding-bottom: 4px;">$1</h2>'
+        );
+
+        // Convert bold
+        html = html.replace(/\*\*(.*?)\*\"/g, "<strong>$1</strong>");
+
+        // Convert checklists
+        html = html.replace(
+          /^- \[x\] (.*?)$/gm,
+          '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px;"><input type="checkbox" checked disabled> <span style="text-decoration: line-through; color: var(--fg-muted);">$1</span></div>'
+        );
+        html = html.replace(
+          /^- \[ \] (.*?)$/gm,
+          '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 13px;"><input type="checkbox" disabled> <span>$1</span></div>'
+        );
+
+        // Convert bullets
+        html = html.replace(
+          /^- (.*?)$/gm,
+          '<li style="margin-left: 16px; margin-bottom: 6px; font-size: 13px; color: var(--fg);">$1</li>'
+        );
+
+        // Convert numbered lists
+        html = html.replace(
+          /^\d+\. \[ \]\s*(.*?)$/gm,
+          '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; padding-left: 8px; font-size: 13px;"><input type="checkbox" disabled> <span>$1</span></div>'
+        );
+
+        // Format paragraphs
+        html = html
+          .split("\n\n")
+          .map((p) => {
+            if (
+              p.trim().startsWith("<h") ||
+              p.trim().startsWith("<div") ||
+              p.trim().startsWith("<li") ||
+              p.trim().startsWith("<ul")
+            ) {
+              return p;
             }
-        }
+            return `<p style="margin: 0 0 10px 0; font-size: 13px; color: var(--fg-muted);">${p.replace(/\n/g, "<br>")}</p>`;
+          })
+          .join("\n");
 
-        async function runRemediation() {
-            const s = DATA.scenarios[activeId];
-            const btn = document.getElementById('run-remediation');
-            btn.disabled = true;
-            btn.innerText = 'Executing...';
-            document.getElementById('remediation-status').innerText = 'Remediation in Progress';
-            
-            const actionsContainer = document.getElementById('remediation-actions-container');
-            actionsContainer.classList.remove('hidden');
-            
-            const stepsDiv = document.getElementById('remediation-steps');
-            stepsDiv.innerHTML = '';
-            
-            const mappedActions = s.remediation.map(getRemediationAction);
-            
-            // Render all actions
-            mappedActions.forEach((act, idx) => {
-                const card = document.createElement('div');
-                card.className = 'action-item-card fade-in';
-                card.id = `step-card-${idx}`;
-                card.style = "border: 1px solid var(--border); border-radius: 10px; padding: 16px; background: rgba(255,255,255,0.02); display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;";
-                card.innerHTML = `
+        return html;
+      }
+
+      async function commitToGitSim() {
+        const s = DATA.scenarios[activeId];
+        const btn = document.getElementById("commit-to-git");
+        btn.disabled = true;
+        btn.innerText = "Committed";
+
+        const gitContainer = document.getElementById("git-output-container");
+        gitContainer.classList.remove("hidden");
+
+        const term = document.getElementById("git-terminal-lines");
+        term.innerHTML = "";
+
+        const lines = [
+          { text: "$ git status", delay: 300, color: "#9CA3AF" },
+          {
+            text: `On branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tpostmortems/${s.id}/\n\nnothing added to commit but untracked files present (use "git add" to track)`,
+            delay: 800,
+          },
+          { text: `$ git add postmortems/${s.id}/`, delay: 500, color: "#9CA3AF" },
+          { text: `$ git commit -m "docs: postmortem ${s.id}"`, delay: 600, color: "#9CA3AF" },
+          {
+            text: `[main abc1234] docs: postmortem ${s.id}\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/${s.id}/postmortem.md`,
+            delay: 800,
+            color: "#10B981",
+          },
+          {
+            text: `🔗 Commit URL: <a href="https://github.com/vib3withsimran/The-war-room/commit/abc1234" target="_blank" style="color: #60A5FA; text-decoration: underline;">https://github.com/vib3withsimran/The-war-room/commit/abc1234</a>`,
+            delay: 300,
+          },
+        ];
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          await new Promise((resolve) => setTimeout(resolve, line.delay));
+          const div = document.createElement("div");
+          div.style.marginBottom = "8px";
+          div.style.whiteSpace = "pre-wrap";
+          if (line.color) {
+            div.style.color = line.color;
+          }
+          div.innerHTML = line.text;
+          term.appendChild(div);
+          gitContainer.scrollTop = gitContainer.scrollHeight;
+        }
+      }
+
+      async function runRemediation() {
+        const s = DATA.scenarios[activeId];
+        const btn = document.getElementById("run-remediation");
+        btn.disabled = true;
+        btn.innerText = "Executing...";
+        document.getElementById("remediation-status").innerText = "Remediation in Progress";
+
+        const actionsContainer = document.getElementById("remediation-actions-container");
+        actionsContainer.classList.remove("hidden");
+
+        const stepsDiv = document.getElementById("remediation-steps");
+        stepsDiv.innerHTML = "";
+
+        const mappedActions = s.remediation.map(getRemediationAction);
+
+        // Render all actions
+        mappedActions.forEach((act, idx) => {
+          const card = document.createElement("div");
+          card.className = "action-item-card fade-in";
+          card.id = `step-card-${idx}`;
+          card.style =
+            "border: 1px solid var(--border); border-radius: 10px; padding: 16px; background: rgba(255,255,255,0.02); display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;";
+          card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="step-badge" style="background: ${act.severity === 'CRITICAL' ? '#FEE2E2' : '#EFF6FF'}; color: ${act.severity === 'CRITICAL' ? '#EF4444' : '#2563EB'}; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">${act.severity}</span>
+                            <span class="step-badge" style="background: ${act.severity === "CRITICAL" ? "#FEE2E2" : "#EFF6FF"}; color: ${act.severity === "CRITICAL" ? "#EF4444" : "#2563EB"}; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px;">${act.severity}</span>
                             <span style="font-weight: 600; font-size: 14px; color: var(--fg);">${act.name}</span>
                         </div>
                         <span class="step-status" style="font-size: 12px; font-weight: 600; color: var(--fg-muted);">Pending</span>
@@ -947,75 +1275,76 @@ ${evidenceTrail.trim()}
                     <div style="font-size: 12px; color: var(--fg-muted);">${act.description}</div>
                     <code style="font-family: var(--font-mono); font-size: 11px; background: rgba(255,255,255,0.04); padding: 4px 8px; border-radius: 4px; color: #E2E8F0; width: fit-content; border: 1px solid var(--border)">$ ${act.command}</code>
                     <div class="progress-bar" style="height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; margin-top: 4px;">
-                        <div class="progress-fill" style="width: 0%; height: 100%; background: ${act.severity === 'CRITICAL' ? '#EF4444' : 'var(--accent)'}; transition: width 0.1s linear;"></div>
+                        <div class="progress-fill" style="width: 0%; height: 100%; background: ${act.severity === "CRITICAL" ? "#EF4444" : "var(--accent)"}; transition: width 0.1s linear;"></div>
                     </div>
                 `;
-                stepsDiv.appendChild(card);
-            });
-            
-            // Execute actions sequentially
-            let startTime = Date.now();
-            for (let i = 0; i < mappedActions.length; i++) {
-                const act = mappedActions[i];
-                const card = document.getElementById(`step-card-${i}`);
-                const statusLabel = card.querySelector('.step-status');
-                const fill = card.querySelector('.progress-fill');
-                
-                statusLabel.innerText = 'Running...';
-                statusLabel.style.color = 'var(--accent)';
-                
-                await new Promise(resolve => {
-                    animateProgress(fill, act.duration, resolve);
-                });
-                
-                statusLabel.innerText = 'Completed ✅';
-                statusLabel.style.color = '#10B981';
-            }
-            
-            let totalMttr = ((Date.now() - startTime) / 1000).toFixed(1);
-            
-            // Final states
-            btn.classList.add('hidden');
-            document.getElementById('remediation-status').innerText = 'Remediation Complete';
-            document.getElementById('resolved-banner').classList.remove('hidden');
-            document.getElementById('mttr-display').innerText = `${totalMttr}s`;
-            
-            document.getElementById('status-badge').style.background = 'rgba(16, 185, 129, 0.1)';
-            document.getElementById('status-badge').style.color = '#10B981';
-            document.getElementById('status-badge').querySelector('span').innerText = 'Incident Resolved';
+          stepsDiv.appendChild(card);
+        });
 
-            // Show postmortem panel
-            const pmSec = document.getElementById('postmortem-section');
-            pmSec.classList.remove('hidden');
-            pmSec.classList.add('fade-in');
-            
-            // Generate and render postmortem content
-            const rawMd = generatePostmortemJS(s, totalMttr);
-            document.getElementById('postmortem-content').innerHTML = renderMarkdownToHtml(rawMd);
-            
-            // Reset Git commit states
-            const gitBtn = document.getElementById('commit-to-git');
-            gitBtn.disabled = false;
-            gitBtn.innerText = 'Commit to Git';
-            document.getElementById('git-output-container').classList.add('hidden');
-            document.getElementById('git-terminal-lines').innerHTML = '';
+        // Execute actions sequentially
+        let startTime = Date.now();
+        for (let i = 0; i < mappedActions.length; i++) {
+          const act = mappedActions[i];
+          const card = document.getElementById(`step-card-${i}`);
+          const statusLabel = card.querySelector(".step-status");
+          const fill = card.querySelector(".progress-fill");
+
+          statusLabel.innerText = "Running...";
+          statusLabel.style.color = "var(--accent)";
+
+          await new Promise((resolve) => {
+            animateProgress(fill, act.duration, resolve);
+          });
+
+          statusLabel.innerText = "Completed ✅";
+          statusLabel.style.color = "#10B981";
         }
 
-        function boot() {
-            if (!DATA || !DATA.order || DATA.order.length === 0) {
-                document.getElementById('incident-room').classList.add('hidden');
-                document.getElementById('boot-error').classList.remove('hidden');
-                return;
-            }
-            renderSidebar();
-            // auto-select + run the first scenario so judges see immediate action
-            selectScenario(DATA.order[0], true);
-            document.getElementById('run-sim').addEventListener('click', runTriage);
-            document.getElementById('run-remediation').addEventListener('click', runRemediation);
-            document.getElementById('commit-to-git').addEventListener('click', commitToGitSim);
-        }
+        let totalMttr = ((Date.now() - startTime) / 1000).toFixed(1);
 
-        boot();
+        // Final states
+        btn.classList.add("hidden");
+        document.getElementById("remediation-status").innerText = "Remediation Complete";
+        document.getElementById("resolved-banner").classList.remove("hidden");
+        document.getElementById("mttr-display").innerText = `${totalMttr}s`;
+
+        document.getElementById("status-badge").style.background = "rgba(16, 185, 129, 0.1)";
+        document.getElementById("status-badge").style.color = "#10B981";
+        document.getElementById("status-badge").querySelector("span").innerText =
+          "Incident Resolved";
+
+        // Show postmortem panel
+        const pmSec = document.getElementById("postmortem-section");
+        pmSec.classList.remove("hidden");
+        pmSec.classList.add("fade-in");
+
+        // Generate and render postmortem content
+        const rawMd = generatePostmortemJS(s, totalMttr);
+        document.getElementById("postmortem-content").innerHTML = renderMarkdownToHtml(rawMd);
+
+        // Reset Git commit states
+        const gitBtn = document.getElementById("commit-to-git");
+        gitBtn.disabled = false;
+        gitBtn.innerText = "Commit to Git";
+        document.getElementById("git-output-container").classList.add("hidden");
+        document.getElementById("git-terminal-lines").innerHTML = "";
+      }
+
+      function boot() {
+        if (!DATA || !DATA.order || DATA.order.length === 0) {
+          document.getElementById("incident-room").classList.add("hidden");
+          document.getElementById("boot-error").classList.remove("hidden");
+          return;
+        }
+        renderSidebar();
+        // auto-select + run the first scenario so judges see immediate action
+        selectScenario(DATA.order[0], true);
+        document.getElementById("run-sim").addEventListener("click", runTriage);
+        document.getElementById("run-remediation").addEventListener("click", runRemediation);
+        document.getElementById("commit-to-git").addEventListener("click", commitToGitSim);
+      }
+
+      boot();
     </script>
-</body>
+  </body>
 </html>

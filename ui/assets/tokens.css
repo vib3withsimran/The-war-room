@@ -11,41 +11,41 @@
 
 :root {
   /* ---------- Surfaces — warm charcoal, five steps ---------- */
-  --sl-bg:         #3D3D3D;   /* page canvas — warm charcoal, never pure black */
-  --sl-bg-alt:     #454545;   /* subtle lift, nested zone */
-  --sl-surface:    #525252;   /* default card / thumb */
-  --sl-surface-2:  #5E5E5E;   /* elevated card, hover */
-  --sl-bg-dark:    #2A2A2A;   /* deep zone, footer */
+  --sl-bg: #3d3d3d; /* page canvas — warm charcoal, never pure black */
+  --sl-bg-alt: #454545; /* subtle lift, nested zone */
+  --sl-surface: #525252; /* default card / thumb */
+  --sl-surface-2: #5e5e5e; /* elevated card, hover */
+  --sl-bg-dark: #2a2a2a; /* deep zone, footer */
 
   /* ---------- Foreground — warm off-white ---------- */
-  --sl-fg:        #EDEDE8;    /* primary text, display */
-  --sl-fg-soft:   #C4C4BE;    /* secondary body */
-  --sl-fg-muted:  #8C8C87;    /* captions, meta, disabled */
-  --sl-fg-faint:  #646461;    /* placeholders */
+  --sl-fg: #edede8; /* primary text, display */
+  --sl-fg-soft: #c4c4be; /* secondary body */
+  --sl-fg-muted: #8c8c87; /* captions, meta, disabled */
+  --sl-fg-faint: #646461; /* placeholders */
 
   /* ---------- Lines — semi-transparent white over charcoal ---------- */
-  --sl-line:        rgba(237, 237, 232, 0.08);   /* default subtle border */
-  --sl-line-strong: rgba(237, 237, 232, 0.16);   /* emphasized */
-  --sl-line-hard:   rgba(237, 237, 232, 0.32);   /* button outline */
+  --sl-line: rgba(237, 237, 232, 0.08); /* default subtle border */
+  --sl-line-strong: rgba(237, 237, 232, 0.16); /* emphasized */
+  --sl-line-hard: rgba(237, 237, 232, 0.32); /* button outline */
 
   /* ---------- Accent — monochrome by default (white on charcoal) ---------- */
   /* The system is intentionally monochromatic. If the host brand
      needs a chromatic accent, override --sl-accent at :root level. */
-  --sl-accent:        #EDEDE8;
-  --sl-accent-soft:   rgba(237, 237, 232, 0.6);
-  --sl-accent-tint:   rgba(237, 237, 232, 0.08);
-  --sl-accent-glow:   rgba(237, 237, 232, 0.20);
-  --sl-accent-ink:    #2A2A2A;   /* text on bright fill */
+  --sl-accent: #edede8;
+  --sl-accent-soft: rgba(237, 237, 232, 0.6);
+  --sl-accent-tint: rgba(237, 237, 232, 0.08);
+  --sl-accent-glow: rgba(237, 237, 232, 0.2);
+  --sl-accent-ink: #2a2a2a; /* text on bright fill */
 
   /* ---------- Support — rare ---------- */
-  --sl-danger:   #E85545;
-  --sl-success:  #7DC877;
-  --sl-warning:  #E8A855;
+  --sl-danger: #e85545;
+  --sl-success: #7dc877;
+  --sl-warning: #e8a855;
 
   /* ---------- Typography ---------- */
   --sl-ff-display: "Archivo Black", "Anton", "Impact", sans-serif;
-  --sl-ff-sans:    "Inter", "Helvetica Neue", Arial, sans-serif;
-  --sl-ff-mono:    "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --sl-ff-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --sl-ff-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
 
   /* Type scale — display sizes are huge by design */
   --sl-fs-display-1: clamp(80px, 14vw, 240px);
@@ -60,65 +60,71 @@
   --sl-fs-small: 13px;
   --sl-fs-micro: 11px;
 
-  --sl-lh-display: 0.88;      /* Archivo Black is heavy — tight line-height */
-  --sl-lh-tight:   1.1;
-  --sl-lh-snug:    1.4;
-  --sl-lh-body:    1.6;
+  --sl-lh-display: 0.88; /* Archivo Black is heavy — tight line-height */
+  --sl-lh-tight: 1.1;
+  --sl-lh-snug: 1.4;
+  --sl-lh-body: 1.6;
 
-  --sl-tracking-display: -0.03em;   /* tight on massive caps */
-  --sl-tracking-label:    0.08em;   /* UPPERCASE labels */
-  --sl-tracking-mono:     0.02em;
+  --sl-tracking-display: -0.03em; /* tight on massive caps */
+  --sl-tracking-label: 0.08em; /* UPPERCASE labels */
+  --sl-tracking-mono: 0.02em;
 
-  --sl-fw-regular:  400;
-  --sl-fw-medium:   500;
+  --sl-fw-regular: 400;
+  --sl-fw-medium: 500;
   --sl-fw-semibold: 600;
-  --sl-fw-bold:     700;
+  --sl-fw-bold: 700;
 
   /* ---------- Spacing (4px base) ---------- */
-  --sl-sp-1:  4px;
-  --sl-sp-2:  8px;
-  --sl-sp-3:  12px;
-  --sl-sp-4:  16px;
-  --sl-sp-5:  24px;
-  --sl-sp-6:  32px;
-  --sl-sp-7:  48px;
-  --sl-sp-8:  64px;
-  --sl-sp-9:  96px;
+  --sl-sp-1: 4px;
+  --sl-sp-2: 8px;
+  --sl-sp-3: 12px;
+  --sl-sp-4: 16px;
+  --sl-sp-5: 24px;
+  --sl-sp-6: 32px;
+  --sl-sp-7: 48px;
+  --sl-sp-8: 64px;
+  --sl-sp-9: 96px;
   --sl-sp-10: 128px;
 
   /* ---------- Geometry — pills and circles ---------- */
-  --sl-r-xs:   4px;
-  --sl-r-sm:   8px;
-  --sl-r-md:   14px;
-  --sl-r-lg:   20px;
-  --sl-r-xl:   28px;
-  --sl-r-pill: 999px;      /* default on buttons, nav chips, product thumbs */
+  --sl-r-xs: 4px;
+  --sl-r-sm: 8px;
+  --sl-r-md: 14px;
+  --sl-r-lg: 20px;
+  --sl-r-xl: 28px;
+  --sl-r-pill: 999px; /* default on buttons, nav chips, product thumbs */
 
-  --sl-bw-hair:  1px;
+  --sl-bw-hair: 1px;
   --sl-bw-thick: 1.5px;
 
   /* ---------- Shadows — soft, grounded ---------- */
-  --sl-shadow-xs: 0 2px 6px  rgba(0, 0, 0, 0.12);
+  --sl-shadow-xs: 0 2px 6px rgba(0, 0, 0, 0.12);
   --sl-shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.16);
-  --sl-shadow:    0 8px 32px rgba(0, 0, 0, 0.24);
+  --sl-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
   --sl-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.32);
 
   /* Soft inner gradient for circular product thumbs */
-  --sl-thumb-gradient: radial-gradient(circle at 50% 40%,
+  --sl-thumb-gradient: radial-gradient(
+    circle at 50% 40%,
     rgba(237, 237, 232, 0.08) 0%,
     rgba(237, 237, 232, 0.02) 60%,
-    transparent 100%);
+    transparent 100%
+  );
 
   /* ---------- Motion — restrained, confident ---------- */
-  --sl-ease:     cubic-bezier(0.2, 0.7, 0.2, 1);
+  --sl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --sl-dur-fast: 180ms;
-  --sl-dur-med:  280ms;
+  --sl-dur-med: 280ms;
 }
 
 /* ============================================================
    Base — applied via .sl-body on <body>
    ============================================================ */
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 .sl-body {
   margin: 0;
@@ -148,4 +154,7 @@
   mix-blend-mode: overlay;
 }
 
-::selection { background: var(--sl-fg); color: var(--sl-accent-ink); }
+::selection {
+  background: var(--sl-fg);
+  color: var(--sl-accent-ink);
+}
