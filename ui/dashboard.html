@@ -431,36 +431,41 @@
         .tab-bar {
             display: flex;
             gap: 8px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 1px;
+            padding: 6px;
             margin-bottom: 32px;
             max-width: 1000px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 26px;
+            width: fit-content;
         }
 
         .tab-btn {
             background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
+            border: 1px solid transparent;
             color: var(--fg-muted);
-            padding: 12px 20px;
-            font-size: 13px;
+            padding: 8px 18px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             outline: none;
+            border-radius: 20px;
         }
 
         .tab-btn:hover {
             color: var(--fg);
-            border-bottom-color: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
         }
 
         .tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-            text-shadow: 0 0 10px var(--accent-glow);
+            color: #070A13;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            border-color: transparent;
+            box-shadow: 0 0 15px var(--accent-glow);
         }
         
         .tab-pane {
@@ -499,6 +504,19 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
+        }
+
+        .topo-svg line {
+            stroke: rgba(0, 180, 216, 0.25);
+            stroke-width: 2;
+            stroke-dasharray: 6, 6;
+            animation: topo-dash 25s linear infinite;
+        }
+
+        @keyframes topo-dash {
+            to {
+                stroke-dashoffset: -1000;
+            }
         }
 
         .topo-node {
@@ -1017,7 +1035,10 @@
         function setStatus(text, statusClass) {
             const badge = document.getElementById('status-badge');
             badge.className = 'status-badge ' + (statusClass || '');
-            document.getElementById('status        // Select a scenario; when run=true, reset the view and re-run triage.
+            document.getElementById('status-text').textContent = text;
+        }
+
+        // Select a scenario; when run=true, reset the view and re-run triage.
         function selectScenario(id, run) {
             activeId = id;
             const s = DATA.scenarios[id];
@@ -1432,8 +1453,6 @@ ${evidenceTrail.trim()}
                 line.setAttribute('y1', p1.y);
                 line.setAttribute('x2', p2.x);
                 line.setAttribute('y2', p2.y);
-                line.setAttribute('stroke', 'rgba(255, 255, 255, 0.08)');
-                line.setAttribute('stroke-width', '1.5');
                 svg.appendChild(line);
             });
         }
