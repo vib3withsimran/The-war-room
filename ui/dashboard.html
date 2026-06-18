@@ -2278,8 +2278,7 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         return card;
       }
 
-      function runTriage() {
-        const s = DATA.scenarios[activeId];
+      async function runTriage() {
         const grid = document.getElementById("agent-grid");
         const runBtn = document.getElementById("run-sim");
 
@@ -2293,9 +2292,27 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         document.getElementById("agents-label").classList.remove("hidden");
         setStatus("Triage in Progress", "mitigating");
         grid.innerHTML = "";
+        grid.appendChild(el("div", "empty-hint", "Dispatching agents\u2026"));
 
         switchTab("swarm"); // Automatically slide to Swarm Deliberation tab
 
+        // Call real API
+        let s;
+        try {
+          const resp = await fetch("/api/triage/" + activeId, { method: "POST" });
+          if (!resp.ok) throw new Error("HTTP " + resp.status);
+          const result = await resp.json();
+          // Merge API response into the scenario data so UI code reads from same place
+          DATA.scenarios[activeId] = Object.assign(DATA.scenarios[activeId] || {}, result);
+          s = DATA.scenarios[activeId];
+        } catch (e) {
+          console.error("Triage API failed:", e);
+          // Fall back to canned data if API unreachable
+          s = DATA.scenarios[activeId];
+          grid.innerHTML = "";
+        }
+
+        grid.innerHTML = "";
         s.agents.forEach((a, i) => {
           setTimeout(() => {
             grid.appendChild(agentCard(a));
@@ -2337,6 +2354,9 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         document.getElementById("remediation-status").innerText = "Pending Human Approval";
         document.getElementById("remediation-actions-container").classList.add("hidden");
         document.getElementById("resolved-banner").classList.add("hidden");
+
+        // Render deliberation messages if present
+        renderDeliberation(s);
 
         switchTab("remediation"); // Automatically transition to Remediation Console tab
       }
@@ -2488,33 +2508,52 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         const term = document.getElementById("git-terminal-lines");
         term.innerHTML = "";
 
-        const commitHash = (window.WAR_ROOM_COMMIT && window.WAR_ROOM_COMMIT.hash) || "e1836c8";
-        const commitUrl =
-          (window.WAR_ROOM_COMMIT && window.WAR_ROOM_COMMIT.url) ||
-          `https://github.com/vib3withsimran/The-war-room/commit/${commitHash}`;
+        // Call real postmortem API
+        let commitHash = "pending";
+        let commitUrl = "#";
+        let committed = false;
+        try {
+          const resp = await fetch("/api/postmortem/" + (s.incident_id || activeId), { method: "POST" });
+          if (resp.ok) {
+            const data = await resp.json();
+            committed = data.committed;
+            commitHash = data.hash || "unknown";
+            commitUrl = data.url || "#";
+          }
+        } catch (e) {
+          console.warn("Postmortem API unavailable, fallback to WAR_ROOM_COMMIT", e);
+        }
+
+        // Fallback if API not available
+        if (!committed || commitHash === "pending") {
+          commitHash = (window.WAR_ROOM_COMMIT && window.WAR_ROOM_COMMIT.hash) || "e1836c8";
+          commitUrl =
+            (window.WAR_ROOM_COMMIT && window.WAR_ROOM_COMMIT.url) ||
+            "https://github.com/vib3withsimran/The-war-room/commit/" + commitHash;
+        }
 
         const lines = [
           { text: "$ git status", delay: 300, color: "#9CA3AF" },
           {
-            text: `On branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use "git add <file>..." to include in what will be committed)\n\tpostmortems/${s.id}/\n\nnothing added to commit but untracked files present (use "git add" to track)`,
+            text: "On branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tpostmortems/" + s.id + "/\n\nnothing added to commit but untracked files present (use \"git add\" to track)",
             delay: 800,
           },
-          { text: `$ git add postmortems/${s.id}/`, delay: 500, color: "#9CA3AF" },
-          { text: `$ git commit -m "docs: postmortem ${s.id}"`, delay: 600, color: "#9CA3AF" },
+          { text: "$ git add postmortems/" + s.id + "/", delay: 500, color: "#9CA3AF" },
+          { text: "$ git commit -m \"docs: postmortem " + s.id + "\"", delay: 600, color: "#9CA3AF" },
           {
-            text: `[main ${commitHash}] docs: postmortem ${s.id}\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/${s.id}/postmortem.md`,
+            text: "[main " + commitHash + "] docs: postmortem " + s.id + "\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/" + s.id + "/postmortem.md",
             delay: 800,
             color: "#10B981",
           },
           {
-            text: `🔗 Commit URL: <a href="${commitUrl}" target="_blank" style="color: #60A5FA; text-decoration: underline;">${commitUrl}</a>`,
+            text: "\uD83D\uDD17 Commit URL: <a href=\"" + commitUrl + "\" target=\"_blank\" style=\"color: #60A5FA; text-decoration: underline;\">" + commitUrl + "</a>",
             delay: 300,
           },
         ];
 
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-          await new Promise((resolve) => setTimeout(resolve, line.delay));
+          await new Promise(function (resolve) { setTimeout(resolve, line.delay); });
           const div = document.createElement("div");
           div.style.marginBottom = "8px";
           div.style.whiteSpace = "pre-wrap";
@@ -2533,6 +2572,13 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         btn.disabled = true;
         btn.innerText = "Executing...";
         document.getElementById("remediation-status").innerText = "Remediation in Progress";
+
+        // Call real remediation API (fire-and-forget — animation proceeds in parallel)
+        let realMttr = null;
+        fetch("/api/remediate/" + (s.incident_id || activeId), { method: "POST" })
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (data) { if (data) realMttr = data.mttr; })
+          .catch(function () { /* API unavailable, use animation timing */ });
 
         const actionsContainer = document.getElementById("remediation-actions-container");
         actionsContainer.classList.remove("hidden");
@@ -2595,7 +2641,7 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         // Reset telemetry back to healthy
         setTelemetryState("healthy");
 
-        let totalMttr = ((Date.now() - startTime) / 1000).toFixed(1);
+        let totalMttr = realMttr != null ? realMttr.toFixed(1) : ((Date.now() - startTime) / 1000).toFixed(1);
 
         // Final states
         btn.classList.add("hidden");
