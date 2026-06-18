@@ -2,261 +2,251 @@
 // Produced by running each scenario through the real Commander + agent
 // pipeline so the dashboard reflects genuine, data-driven findings.
 window.WAR_ROOM_SCENARIOS = {
-  order: ["inc-001", "inc-002", "inc-003"],
-  scenarios: {
+  "order": [
+    "inc-001",
+    "inc-002",
+    "inc-003"
+  ],
+  "scenarios": {
     "inc-001": {
-      id: "inc-001",
-      alertId: "alert-001",
-      title: "API Gateway Latency Spike",
-      description: "P99 latency spiked to 2450ms on api-gateway service",
-      service: "api-gateway",
-      severity: 3,
-      sevLabel: "SEV-2",
-      sevClass: "sev-2",
-      timeWindow: "14:30-14:35",
-      status: "resolved",
-      statusLabel: "Resolved",
-      confidence: 0.89,
-      verdict:
-        "WARNING: Metrics anomaly detected for API Gateway Latency Spike without clear change correlation.",
-      rootCause:
-        "Metrics anomaly detected for API Gateway Latency Spike with no corresponding change correlation.",
-      remediation: ["Scale up resources", "Inspect underlying infrastructure health"],
-      agents: [
-        {
-          key: "metrics",
-          name: "Metrics",
-          order: 0,
-          findingType: "anomaly",
-          signal: "connection_pool_exhaustion",
-          summary: "Connection Pool Exhausted",
-          detail: "p99=2680ms (baseline=120ms), pool=99%, error_rate=4.1%, cpu=46%",
-          hypothesis:
-            "Connection pool exhaustion driving latency spike: pool=99%, p99=2680ms vs baseline 120ms",
-          confidence: 0.92,
-        },
-        {
-          key: "logs",
-          name: "Logs",
-          order: 1,
-          findingType: "log_anomaly",
-          signal: "connection_pool_exhaustion",
-          summary: "Connection Pool Exhausted",
-          detail: "ConnectionPoolExhaustedException×5, warn=3",
-          hypothesis:
-            "Recurring exception: ConnectionPoolExhaustedException × 5 errors in incident window",
-          confidence: 0.88,
-        },
-        {
-          key: "change",
-          name: "Change",
-          order: 2,
-          findingType: "change_correlation",
-          signal: "high_impact_deploy",
-          summary: "High-Impact Deploy",
-          detail:
-            "deploy #847 at 2026-06-12T14:30:00Z, diff: pool.maxSize: 50 → 10; pool.minIdle: 5 → 2",
-          hypothesis:
-            "Deploy #847 at 2026-06-12T14:30:00Z (1min before incident) changed high-impact config: pool.maxSize: 50 → 10; pool.minIdle: 5 → 2",
-          confidence: 0.9,
-        },
-        {
-          key: "runbook",
-          name: "Runbook",
-          order: 3,
-          findingType: "runbook_match",
-          signal: "runbook_stale",
-          summary: "Stale Runbook",
-          detail: "stale: 107 days old, docs: pool.maxSize=50, pool.maxSize=50",
-          hypothesis:
-            "Runbook 'api-gateway.md' is STALE: last updated 107 days ago (threshold: 60 days). Documented config: pool.maxSize=50, pool.maxSize=50. Verify these values reflect current system state before following procedures.",
-          confidence: 0.82,
-        },
+      "id": "inc-001",
+      "alertId": "alert-001",
+      "title": "API Gateway Latency Spike",
+      "description": "P99 latency spiked to 2450ms on api-gateway service",
+      "service": "api-gateway",
+      "severity": 3,
+      "sevLabel": "SEV-2",
+      "sevClass": "sev-2",
+      "timeWindow": "14:30-14:35",
+      "status": "resolved",
+      "statusLabel": "Resolved",
+      "confidence": 0.89,
+      "verdict": "WARNING: Metrics anomaly detected for API Gateway Latency Spike without clear change correlation.",
+      "rootCause": "Metrics anomaly detected for API Gateway Latency Spike with no corresponding change correlation.",
+      "remediation": [
+        "Scale up resources",
+        "Inspect underlying infrastructure health"
       ],
-      deliberation: [],
+      "agents": [
+        {
+          "key": "metrics",
+          "name": "Metrics",
+          "order": 0,
+          "findingType": "anomaly",
+          "signal": "connection_pool_exhaustion",
+          "summary": "Connection Pool Exhausted",
+          "detail": "p99=2680ms (baseline=120ms), pool=99%, error_rate=4.1%, cpu=46%",
+          "hypothesis": "Connection pool exhaustion driving latency spike: pool=99%, p99=2680ms vs baseline 120ms",
+          "confidence": 0.92
+        },
+        {
+          "key": "logs",
+          "name": "Logs",
+          "order": 1,
+          "findingType": "log_anomaly",
+          "signal": "connection_pool_exhaustion",
+          "summary": "Connection Pool Exhausted",
+          "detail": "ConnectionPoolExhaustedException×5, warn=3",
+          "hypothesis": "Recurring exception: ConnectionPoolExhaustedException × 5 errors in incident window",
+          "confidence": 0.88
+        },
+        {
+          "key": "change",
+          "name": "Change",
+          "order": 2,
+          "findingType": "change_correlation",
+          "signal": "high_impact_deploy",
+          "summary": "High-Impact Deploy",
+          "detail": "deploy #847 at 2026-06-12T14:30:00Z, diff: pool.maxSize: 50 → 10; pool.minIdle: 5 → 2",
+          "hypothesis": "Deploy #847 at 2026-06-12T14:30:00Z (1min before incident) changed high-impact config: pool.maxSize: 50 → 10; pool.minIdle: 5 → 2",
+          "confidence": 0.9
+        },
+        {
+          "key": "runbook",
+          "name": "Runbook",
+          "order": 3,
+          "findingType": "runbook_match",
+          "signal": "runbook_stale",
+          "summary": "Stale Runbook",
+          "detail": "stale: 107 days old, docs: pool.maxSize=50, pool.maxSize=50",
+          "hypothesis": "Runbook 'api-gateway.md' is STALE: last updated 107 days ago (threshold: 60 days). Documented config: pool.maxSize=50, pool.maxSize=50. Verify these values reflect current system state before following procedures.",
+          "confidence": 0.82
+        }
+      ],
+      "deliberation": []
     },
     "inc-002": {
-      id: "inc-002",
-      alertId: "alert-002",
-      title: "User Service Elevated Latency",
-      description: "P99 latency elevated to 380ms on user-service, slow queries detected",
-      service: "user-service",
-      severity: 2,
-      sevLabel: "SEV-3",
-      sevClass: "sev-3",
-      timeWindow: "10:20-10:30",
-      status: "mitigating",
-      statusLabel: "Investigating",
-      confidence: 0.76,
-      verdict:
-        "WARNING: Metrics anomaly detected for User Service Elevated Latency without clear change correlation.",
-      rootCause:
-        "Metrics anomaly detected for User Service Elevated Latency with no corresponding change correlation.",
-      remediation: ["Scale up resources", "Inspect underlying infrastructure health"],
-      agents: [
-        {
-          key: "metrics",
-          name: "Metrics",
-          order: 0,
-          findingType: "anomaly",
-          signal: "latency_spike",
-          summary: "Latency Anomaly",
-          detail: "p99=380ms (baseline=120ms), pool=58%, error_rate=0.5%, cpu=68%",
-          hypothesis:
-            "Latency anomaly detected: p99=380ms vs baseline 120ms (×3.2), error_rate=0.5%",
-          confidence: 0.85,
-        },
-        {
-          key: "logs",
-          name: "Logs",
-          order: 1,
-          findingType: "log_observation",
-          signal: "slow_queries",
-          summary: "Slow Queries",
-          detail: "warnings=5, errors=0",
-          hypothesis: "5 warnings detected — likely slow queries or degraded performance",
-          confidence: 0.65,
-        },
-        {
-          key: "change",
-          name: "Change",
-          order: 2,
-          findingType: "change_note",
-          signal: "no_recent_changes",
-          summary: "No Recent Changes",
-          detail: "no_changes_in_30min_window",
-          hypothesis:
-            "No deployments or config changes in the 30-minute window before the incident",
-          confidence: 0.8,
-        },
-        {
-          key: "runbook",
-          name: "Runbook",
-          order: 3,
-          findingType: "runbook_match",
-          signal: "runbook_current",
-          summary: "Runbook Current",
-          detail: "runbook_current, sections=6, 37 days old",
-          hypothesis:
-            "Runbook 'user-service.md' found with 6 sections. Procedures appear current (37 days old). **Last updated**: 2026-05-10",
-          confidence: 0.75,
-        },
+      "id": "inc-002",
+      "alertId": "alert-002",
+      "title": "User Service Elevated Latency",
+      "description": "P99 latency elevated to 380ms on user-service, slow queries detected",
+      "service": "user-service",
+      "severity": 2,
+      "sevLabel": "SEV-3",
+      "sevClass": "sev-3",
+      "timeWindow": "10:20-10:30",
+      "status": "mitigating",
+      "statusLabel": "Investigating",
+      "confidence": 0.76,
+      "verdict": "WARNING: Metrics anomaly detected for User Service Elevated Latency without clear change correlation.",
+      "rootCause": "Metrics anomaly detected for User Service Elevated Latency with no corresponding change correlation.",
+      "remediation": [
+        "Scale up resources",
+        "Inspect underlying infrastructure health"
       ],
-      deliberation: [
+      "agents": [
         {
-          sender: "metrics-agent",
-          content: "Low severity triage complete for inc-002. No anomalies detected.",
+          "key": "metrics",
+          "name": "Metrics",
+          "order": 0,
+          "findingType": "anomaly",
+          "signal": "latency_spike",
+          "summary": "Latency Anomaly",
+          "detail": "p99=380ms (baseline=120ms), pool=58%, error_rate=0.5%, cpu=68%",
+          "hypothesis": "Latency anomaly detected: p99=380ms vs baseline 120ms (×3.2), error_rate=0.5%",
+          "confidence": 0.85
         },
         {
-          sender: "logs-agent",
-          content:
-            "Low severity log triage complete for inc-002. No critical log anomalies detected.",
+          "key": "logs",
+          "name": "Logs",
+          "order": 1,
+          "findingType": "log_observation",
+          "signal": "slow_queries",
+          "summary": "Slow Queries",
+          "detail": "warnings=5, errors=0",
+          "hypothesis": "5 warnings detected — likely slow queries or degraded performance",
+          "confidence": 0.65
         },
         {
-          sender: "change-agent",
-          content:
-            "Low/Medium severity triage for inc-002 complete. Change correlation finding: no_changes_in_30min_window.",
+          "key": "change",
+          "name": "Change",
+          "order": 2,
+          "findingType": "change_note",
+          "signal": "no_recent_changes",
+          "summary": "No Recent Changes",
+          "detail": "no_changes_in_30min_window",
+          "hypothesis": "No deployments or config changes in the 30-minute window before the incident",
+          "confidence": 0.8
         },
         {
-          sender: "runbook-agent",
-          content: "Low severity triage complete for inc-002. No runbook match found.",
-        },
+          "key": "runbook",
+          "name": "Runbook",
+          "order": 3,
+          "findingType": "runbook_match",
+          "signal": "runbook_current",
+          "summary": "Runbook Current",
+          "detail": "runbook_current, sections=6, 37 days old",
+          "hypothesis": "Runbook 'user-service.md' found with 6 sections. Procedures appear current (37 days old). **Last updated**: 2026-05-10",
+          "confidence": 0.75
+        }
       ],
+      "deliberation": [
+        {
+          "sender": "metrics-agent",
+          "content": "Low severity triage complete for inc-002. No anomalies detected."
+        },
+        {
+          "sender": "logs-agent",
+          "content": "Low severity log triage complete for inc-002. No critical log anomalies detected."
+        },
+        {
+          "sender": "change-agent",
+          "content": "Low/Medium severity triage for inc-002 complete. Change correlation finding: no_changes_in_30min_window."
+        },
+        {
+          "sender": "runbook-agent",
+          "content": "Low severity triage complete for inc-002. No runbook match found."
+        }
+      ]
     },
     "inc-003": {
-      id: "inc-003",
-      alertId: "alert-003",
-      title: "Payment Service Full Outage",
-      description:
-        "100% error rate on payment-service, NullPointerException and OutOfMemoryError in logs",
-      service: "payment-service",
-      severity: 4,
-      sevLabel: "SEV-1",
-      sevClass: "sev-1",
-      timeWindow: "08:45-09:10",
-      status: "resolved",
-      statusLabel: "Resolved",
-      confidence: 0.91,
-      verdict:
-        "CRITICAL: Deployment correlation found for Payment Service Full Outage. Recent changes are causing service errors.",
-      rootCause:
-        "Recent deployment change correlates with service errors reported in logs for Payment Service Full Outage.",
-      remediation: ["Rollback last deployment", "Check container logs for specific crash reason"],
-      agents: [
-        {
-          key: "metrics",
-          name: "Metrics",
-          order: 0,
-          findingType: "anomaly",
-          signal: "total_outage",
-          summary: "Total Outage",
-          detail: "p99=8900ms (baseline=200ms), pool=100%, error_rate=100.0%, cpu=98%",
-          hypothesis: "Full service degradation detected: error_rate=100.0%, cpu=98%",
-          confidence: 0.95,
-        },
-        {
-          key: "logs",
-          name: "Logs",
-          order: 1,
-          findingType: "log_anomaly",
-          signal: "null_reference_crash",
-          summary: "Null Reference Crash",
-          detail: "NullPointerException×4, total_errors=10",
-          hypothesis:
-            "FATAL exceptions detected: NullPointerException × 4 — indicates service crash or unrecoverable error",
-          confidence: 0.92,
-        },
-        {
-          key: "change",
-          name: "Change",
-          order: 2,
-          findingType: "change_correlation",
-          signal: "high_impact_deploy",
-          summary: "High-Impact Deploy",
-          detail:
-            "deploy #302 at 2026-06-14T08:45:00Z, diff: vault.endpoint: https://vault.internal:8200 → https://vault-v2.internal:8200; vault.client_init: eager → lazy",
-          hypothesis:
-            "Deploy #302 at 2026-06-14T08:45:00Z (1min before incident) changed high-impact config: vault.endpoint: https://vault.internal:8200 → https://vault-v2.internal:8200; vault.client_init: eager → lazy",
-          confidence: 0.9,
-        },
-        {
-          key: "runbook",
-          name: "Runbook",
-          order: 3,
-          findingType: "runbook_match",
-          signal: "runbook_stale",
-          summary: "Stale Runbook",
-          detail: "stale: 152 days old, docs: jvm.heap_max_gb=4",
-          hypothesis:
-            "Runbook 'payment-service.md' is STALE: last updated 152 days ago (threshold: 60 days). Documented config: jvm.heap_max_gb=4. Verify these values reflect current system state before following procedures.",
-          confidence: 0.82,
-        },
+      "id": "inc-003",
+      "alertId": "alert-003",
+      "title": "Payment Service Full Outage",
+      "description": "100% error rate on payment-service, NullPointerException and OutOfMemoryError in logs",
+      "service": "payment-service",
+      "severity": 4,
+      "sevLabel": "SEV-1",
+      "sevClass": "sev-1",
+      "timeWindow": "08:45-09:10",
+      "status": "resolved",
+      "statusLabel": "Resolved",
+      "confidence": 0.91,
+      "verdict": "CRITICAL: Deployment correlation found for Payment Service Full Outage. Recent changes are causing service errors.",
+      "rootCause": "Recent deployment change correlates with service errors reported in logs for Payment Service Full Outage.",
+      "remediation": [
+        "Rollback last deployment",
+        "Check container logs for specific crash reason"
       ],
-      deliberation: [
+      "agents": [
         {
-          sender: "metrics-agent",
-          content: "Low severity triage complete for inc-003. No anomalies detected.",
+          "key": "metrics",
+          "name": "Metrics",
+          "order": 0,
+          "findingType": "anomaly",
+          "signal": "total_outage",
+          "summary": "Total Outage",
+          "detail": "p99=8900ms (baseline=200ms), pool=100%, error_rate=100.0%, cpu=98%",
+          "hypothesis": "Full service degradation detected: error_rate=100.0%, cpu=98%",
+          "confidence": 0.95
         },
         {
-          sender: "logs-agent",
-          content:
-            "Low severity log triage complete for inc-003. No critical log anomalies detected.",
+          "key": "logs",
+          "name": "Logs",
+          "order": 1,
+          "findingType": "log_anomaly",
+          "signal": "null_reference_crash",
+          "summary": "Null Reference Crash",
+          "detail": "NullPointerException×4, total_errors=10",
+          "hypothesis": "FATAL exceptions detected: NullPointerException × 4 — indicates service crash or unrecoverable error",
+          "confidence": 0.92
         },
         {
-          sender: "change-agent",
-          content:
-            "Low/Medium severity triage for inc-003 complete. Change correlation finding: deploy #302 at 2026-06-14T08:45:00Z, diff: vault.endpoint: https://vault.internal:8200 → https://vault-v2.internal:8200; vault.client_init: eager → lazy.",
+          "key": "change",
+          "name": "Change",
+          "order": 2,
+          "findingType": "change_correlation",
+          "signal": "high_impact_deploy",
+          "summary": "High-Impact Deploy",
+          "detail": "deploy #302 at 2026-06-14T08:45:00Z, diff: vault.endpoint: https://vault.internal:8200 → https://vault-v2.internal:8200; vault.client_init: eager → lazy",
+          "hypothesis": "Deploy #302 at 2026-06-14T08:45:00Z (1min before incident) changed high-impact config: vault.endpoint: https://vault.internal:8200 → https://vault-v2.internal:8200; vault.client_init: eager → lazy",
+          "confidence": 0.9
         },
         {
-          sender: "runbook-agent",
-          content: "Low severity triage complete for inc-003. No runbook match found.",
-        },
+          "key": "runbook",
+          "name": "Runbook",
+          "order": 3,
+          "findingType": "runbook_match",
+          "signal": "runbook_stale",
+          "summary": "Stale Runbook",
+          "detail": "stale: 152 days old, docs: jvm.heap_max_gb=4",
+          "hypothesis": "Runbook 'payment-service.md' is STALE: last updated 152 days ago (threshold: 60 days). Documented config: jvm.heap_max_gb=4. Verify these values reflect current system state before following procedures.",
+          "confidence": 0.82
+        }
       ],
-    },
-  },
+      "deliberation": [
+        {
+          "sender": "metrics-agent",
+          "content": "Low severity triage complete for inc-003. No anomalies detected."
+        },
+        {
+          "sender": "logs-agent",
+          "content": "Low severity log triage complete for inc-003. No critical log anomalies detected."
+        },
+        {
+          "sender": "change-agent",
+          "content": "Low/Medium severity triage for inc-003 complete. Change correlation finding: deploy #302 at 2026-06-14T08:45:00Z, diff: vault.endpoint: https://vault.internal:8200 → https://vault-v2.internal:8200; vault.client_init: eager → lazy."
+        },
+        {
+          "sender": "runbook-agent",
+          "content": "Low severity triage complete for inc-003. No runbook match found."
+        }
+      ]
+    }
+  }
 };
 
 window.WAR_ROOM_COMMIT = {
-  "hash": "e1836c8",
-  "url": "https://github.com/vib3withsimran/The-war-room/commit/e1836c8"
+  "hash": "e6539cb",
+  "url": "https://github.com/vib3withsimran/The-war-room/commit/e6539cb"
 };
