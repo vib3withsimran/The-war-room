@@ -1268,9 +1268,217 @@
       .setting-row textarea:focus {
         border-color: var(--accent);
       }
+
+      /* --- Gated Tab & Tour Styles --- */
+      .tab-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      .tour-btn {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        color: var(--accent);
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 100;
+      }
+      .tour-btn:hover {
+        background: rgba(0, 180, 216, 0.1);
+        border-color: var(--accent);
+        box-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
+        transform: translateY(-1px);
+      }
+
+      .tour-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(7, 10, 19, 0.85);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      .tour-overlay.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .tour-card {
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        width: 500px;
+        max-width: 90%;
+        padding: 32px;
+        box-shadow:
+          var(--shadow-lg),
+          0 0 40px rgba(0, 180, 216, 0.15);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        transform: scale(0.95);
+        transition: transform 0.3s ease;
+      }
+      .tour-overlay.open .tour-card {
+        transform: scale(1);
+      }
+      .tour-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .tour-title {
+        font-size: 20px;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--fg), var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .tour-close {
+        background: transparent;
+        border: none;
+        color: var(--fg-muted);
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+      .tour-close:hover {
+        color: var(--fg);
+      }
+      .tour-body {
+        font-size: 14px;
+        color: var(--fg-muted);
+        line-height: 1.6;
+        min-height: 120px;
+      }
+      .tour-step-indicator {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 8px;
+      }
+      .tour-step-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--fg);
+        margin-bottom: 12px;
+      }
+      .tour-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+      }
+      .tour-dots {
+        display: flex;
+        gap: 6px;
+      }
+      .tour-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        transition: all 0.2s ease;
+      }
+      .tour-dot.active {
+        background: var(--accent);
+        transform: scale(1.2);
+        box-shadow: 0 0 8px var(--accent);
+      }
+      .tour-actions {
+        display: flex;
+        gap: 12px;
+      }
+      .tour-btn-nav {
+        padding: 8px 16px;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: var(--radius);
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--fg);
+      }
+      .tour-btn-nav:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+      .tour-btn-nav.primary {
+        background: linear-gradient(135deg, var(--accent), var(--success));
+        border: none;
+        color: #070a13;
+        font-weight: 700;
+        box-shadow: 0 0 12px var(--accent-glow);
+      }
+      .tour-btn-nav.primary:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      /* Tooltips */
+      .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        margin-left: 6px;
+        color: var(--accent);
+        font-weight: normal;
+        text-transform: none;
+      }
+      .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 220px;
+        background-color: #0f172a;
+        color: var(--fg);
+        text-align: left;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-lg);
+        font-size: 11px;
+        font-family: var(--font-sans);
+        font-weight: normal;
+        line-height: 1.4;
+        text-transform: none;
+        letter-spacing: normal;
+        position: absolute;
+        z-index: 1001;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -110px;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
+    <button class="tour-btn" onclick="openTour()">💡 Quick Start Tour</button>
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <a
@@ -1316,9 +1524,15 @@
         <!-- SUB-NAVIGATION TABS -->
         <div class="tab-bar">
           <button class="tab-btn active" data-tab="ops">🌐 Live Ops & Topology</button>
-          <button class="tab-btn" data-tab="swarm">💬 Swarm Deliberation</button>
-          <button class="tab-btn" data-tab="remediation">🛠️ Remediation Console</button>
-          <button class="tab-btn" data-tab="postmortem">📝 Postmortem Vault</button>
+          <button class="tab-btn" data-tab="swarm" id="tab-btn-swarm" disabled>
+            💬 Swarm Deliberation
+          </button>
+          <button class="tab-btn" data-tab="remediation" id="tab-btn-remediation" disabled>
+            🛠️ Remediation Console
+          </button>
+          <button class="tab-btn" data-tab="postmortem" id="tab-btn-postmortem" disabled>
+            📝 Postmortem Vault
+          </button>
           <button class="tab-btn" data-tab="settings">⚙️ Swarm Settings</button>
         </div>
 
@@ -1815,10 +2029,33 @@
                 >
                   Confidence Weight Allocations
                 </h3>
+                <p
+                  style="
+                    font-size: 12px;
+                    color: var(--fg-muted);
+                    margin: 0 0 16px 0;
+                    line-height: 1.5;
+                    text-transform: none;
+                  "
+                >
+                  These weights define the relative importance of each specialized agent during
+                  consensus evaluation. When the incident commander synthesizes findings, it
+                  multiplies each agent's local confidence by its allocated weight to compute the
+                  overall incident confidence. Gating thresholds automatically lock down actions if
+                  the overall confidence does not meet the safety requirements.
+                </p>
 
                 <div class="setting-row">
                   <label>
-                    <span>Metrics Agent Weight</span>
+                    <span style="display: flex; align-items: center">
+                      Metrics Agent Weight
+                      <span class="tooltip"
+                        >ℹ️<span class="tooltiptext"
+                          >Weights how much metrics anomalies (e.g., latency spikes or connection
+                          pool exhaustion) impact the final incident confidence.</span
+                        ></span
+                      >
+                    </span>
                     <span id="val-weight-metrics">25%</span>
                   </label>
                   <input
@@ -1833,7 +2070,15 @@
 
                 <div class="setting-row">
                   <label>
-                    <span>Logs Agent Weight</span>
+                    <span style="display: flex; align-items: center">
+                      Logs Agent Weight
+                      <span class="tooltip"
+                        >ℹ️<span class="tooltiptext"
+                          >Weights the impact of log anomalies (e.g., exception counts,
+                          OutOfMemoryErrors) on the triage consensus.</span
+                        ></span
+                      >
+                    </span>
                     <span id="val-weight-logs">25%</span>
                   </label>
                   <input
@@ -1848,7 +2093,15 @@
 
                 <div class="setting-row">
                   <label>
-                    <span>Change Agent Weight</span>
+                    <span style="display: flex; align-items: center">
+                      Change Agent Weight
+                      <span class="tooltip"
+                        >ℹ️<span class="tooltiptext"
+                          >Weights the correlation of recent deployments or config changes to the
+                          incident window.</span
+                        ></span
+                      >
+                    </span>
                     <span id="val-weight-change">25%</span>
                   </label>
                   <input
@@ -1863,7 +2116,15 @@
 
                 <div class="setting-row">
                   <label>
-                    <span>Runbook Agent Weight</span>
+                    <span style="display: flex; align-items: center">
+                      Runbook Agent Weight
+                      <span class="tooltip"
+                        >ℹ️<span class="tooltiptext"
+                          >Weights the matching score and freshness of matching troubleshooting
+                          runbooks.</span
+                        ></span
+                      >
+                    </span>
                     <span id="val-weight-runbook">15%</span>
                   </label>
                   <input
@@ -1878,7 +2139,15 @@
 
                 <div class="setting-row">
                   <label>
-                    <span>Deliberation Weight</span>
+                    <span style="display: flex; align-items: center">
+                      Deliberation Weight
+                      <span class="tooltip"
+                        >ℹ️<span class="tooltiptext"
+                          >Weights the importance of agent cross-talk and agreement during the
+                          deliberation phase.</span
+                        ></span
+                      >
+                    </span>
                     <span id="val-weight-delib">10%</span>
                   </label>
                   <input
@@ -1947,6 +2216,30 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         </div>
       </div>
     </main>
+
+    <!-- Guided Tour Modal -->
+    <div id="tour-overlay" class="tour-overlay">
+      <div class="tour-card">
+        <div class="tour-header">
+          <div class="tour-title">War Room Studio Tour</div>
+          <button class="tour-close" onclick="closeTour()">&times;</button>
+        </div>
+        <div class="tour-body" id="tour-body">
+          <!-- Content injected dynamically -->
+        </div>
+        <div class="tour-footer">
+          <div class="tour-dots" id="tour-dots">
+            <!-- Dots injected dynamically -->
+          </div>
+          <div class="tour-actions">
+            <button class="tour-btn-nav" id="tour-prev" onclick="prevTourSlide()">Back</button>
+            <button class="tour-btn-nav primary" id="tour-next" onclick="nextTourSlide()">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Real pipeline output, generated by demo/gen_dashboard_data.py -->
     <script src="scenarios.js"></script>
@@ -2235,6 +2528,10 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
       }
 
       function resetView() {
+        document.getElementById("run-sim").disabled = false;
+        document.getElementById("tab-btn-swarm").disabled = true;
+        document.getElementById("tab-btn-remediation").disabled = true;
+        document.getElementById("tab-btn-postmortem").disabled = true;
         document.getElementById("verdict-section").classList.add("hidden");
         document.getElementById("remediation-section").classList.add("hidden");
         document.getElementById("remediation-placeholder").classList.remove("hidden");
@@ -2294,6 +2591,7 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         grid.innerHTML = "";
         grid.appendChild(el("div", "empty-hint", "Dispatching agents\u2026"));
 
+        document.getElementById("tab-btn-swarm").disabled = false;
         switchTab("swarm"); // Automatically slide to Swarm Deliberation tab
 
         // Call real API
@@ -2313,6 +2611,11 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         }
 
         grid.innerHTML = "";
+        if (!s || !s.agents) {
+          runBtn.disabled = false;
+          grid.appendChild(el("div", "empty-hint", "Failed to dispatch agents. Please try again."));
+          return;
+        }
         s.agents.forEach((a, i) => {
           setTimeout(() => {
             grid.appendChild(agentCard(a));
@@ -2358,6 +2661,11 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         // Render deliberation messages if present
         renderDeliberation(s);
 
+        // Re-enable Execute Triage button
+        document.getElementById("run-sim").disabled = false;
+
+        // Unlock and switch to remediation console tab
+        document.getElementById("tab-btn-remediation").disabled = false;
         switchTab("remediation"); // Automatically transition to Remediation Console tab
       }
 
@@ -2513,7 +2821,9 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         let commitUrl = "#";
         let committed = false;
         try {
-          const resp = await fetch("/api/postmortem/" + (s.incident_id || activeId), { method: "POST" });
+          const resp = await fetch("/api/postmortem/" + (s.incident_id || activeId), {
+            method: "POST",
+          });
           if (resp.ok) {
             const data = await resp.json();
             committed = data.committed;
@@ -2535,25 +2845,42 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         const lines = [
           { text: "$ git status", delay: 300, color: "#9CA3AF" },
           {
-            text: "On branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tpostmortems/" + s.id + "/\n\nnothing added to commit but untracked files present (use \"git add\" to track)",
+            text:
+              "On branch main\nYour branch is up to date with 'origin/main'.\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tpostmortems/" +
+              s.id +
+              '/\n\nnothing added to commit but untracked files present (use "git add" to track)',
             delay: 800,
           },
           { text: "$ git add postmortems/" + s.id + "/", delay: 500, color: "#9CA3AF" },
-          { text: "$ git commit -m \"docs: postmortem " + s.id + "\"", delay: 600, color: "#9CA3AF" },
+          { text: '$ git commit -m "docs: postmortem ' + s.id + '"', delay: 600, color: "#9CA3AF" },
           {
-            text: "[main " + commitHash + "] docs: postmortem " + s.id + "\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/" + s.id + "/postmortem.md",
+            text:
+              "[main " +
+              commitHash +
+              "] docs: postmortem " +
+              s.id +
+              "\n 1 file changed, 43 insertions(+)\n create mode 100644 postmortems/" +
+              s.id +
+              "/postmortem.md",
             delay: 800,
             color: "#10B981",
           },
           {
-            text: "\uD83D\uDD17 Commit URL: <a href=\"" + commitUrl + "\" target=\"_blank\" style=\"color: #60A5FA; text-decoration: underline;\">" + commitUrl + "</a>",
+            text:
+              '\uD83D\uDD17 Commit URL: <a href="' +
+              commitUrl +
+              '" target="_blank" style="color: #60A5FA; text-decoration: underline;">' +
+              commitUrl +
+              "</a>",
             delay: 300,
           },
         ];
 
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-          await new Promise(function (resolve) { setTimeout(resolve, line.delay); });
+          await new Promise(function (resolve) {
+            setTimeout(resolve, line.delay);
+          });
           const div = document.createElement("div");
           div.style.marginBottom = "8px";
           div.style.whiteSpace = "pre-wrap";
@@ -2576,9 +2903,15 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         // Call real remediation API (fire-and-forget — animation proceeds in parallel)
         let realMttr = null;
         fetch("/api/remediate/" + (s.incident_id || activeId), { method: "POST" })
-          .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (data) { if (data) realMttr = data.mttr; })
-          .catch(function () { /* API unavailable, use animation timing */ });
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (data) {
+            if (data) realMttr = data.mttr;
+          })
+          .catch(function () {
+            /* API unavailable, use animation timing */
+          });
 
         const actionsContainer = document.getElementById("remediation-actions-container");
         actionsContainer.classList.remove("hidden");
@@ -2641,7 +2974,8 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         // Reset telemetry back to healthy
         setTelemetryState("healthy");
 
-        let totalMttr = realMttr != null ? realMttr.toFixed(1) : ((Date.now() - startTime) / 1000).toFixed(1);
+        let totalMttr =
+          realMttr != null ? realMttr.toFixed(1) : ((Date.now() - startTime) / 1000).toFixed(1);
 
         // Final states
         btn.classList.add("hidden");
@@ -2671,6 +3005,8 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         document.getElementById("git-output-container").classList.add("hidden");
         document.getElementById("git-terminal-lines").innerHTML = "";
 
+        // Unlock and switch to postmortem vault tab
+        document.getElementById("tab-btn-postmortem").disabled = false;
         switchTab("postmortem"); // Automatically transition to Postmortem Vault tab
       }
 
@@ -2799,6 +3135,106 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         switchTab("ops"); // Switch back to live ops
       }
 
+      // --- Guided Tour State and Slides ---
+      let tourCurrentSlide = 0;
+      const tourSlides = [
+        {
+          indicator: "Welcome",
+          title: "Welcome to War Room Studio!",
+          content:
+            "This is a premium, interactive cockpit designed to evaluate and run AI incident response swarms. Follow this 1-minute quick start guide to understand the complete self-healing workflow.",
+        },
+        {
+          indicator: "Step 1",
+          title: "Select an Incident Scenario",
+          content:
+            "Use the left sidebar under <strong>Incident Scenarios</strong> to select a problem (e.g., API Gateway latency, Payment Service outage). The service topology graph will automatically update to reflect the initial warning states.",
+        },
+        {
+          indicator: "Step 2",
+          title: "Execute Swarm Triage",
+          content:
+            "Click the <strong>Execute Triage</strong> button in the sidebar. This dispatches four specialized AI agents (Metrics, Logs, Change, and Runbook) to inspect the incident in parallel. You will automatically switch to the <strong>Swarm Deliberation</strong> tab.",
+        },
+        {
+          indicator: "Step 3",
+          title: "Observe Agent Deliberation",
+          content:
+            "In the <strong>Swarm Deliberation</strong> tab, you can read the live findings and real-time agent debate as they correlate logs, metrics, recent deployments, and runbooks to determine the root cause.",
+        },
+        {
+          indicator: "Step 4",
+          title: "Approve and Run Remediation",
+          content:
+            "Once triage is complete, a verdict will be published. This unlocks the <strong>Remediation Console</strong> tab. Review the suggested actions, click <strong>Run Remediation</strong>, and watch the live telemetry graph return to a healthy baseline.",
+        },
+        {
+          indicator: "Step 5",
+          title: "Commit Postmortem to Git",
+          content:
+            "Finally, the <strong>Postmortem Vault</strong> tab will unlock, presenting a markdown postmortem report. Click <strong>Commit to Git</strong> to simulate pushing the documentation directly to the repository's git branch.",
+        },
+      ];
+
+      function openTour() {
+        tourCurrentSlide = 0;
+        updateTourSlide();
+        document.getElementById("tour-overlay").classList.add("open");
+      }
+
+      function closeTour() {
+        document.getElementById("tour-overlay").classList.remove("open");
+      }
+
+      function nextTourSlide() {
+        if (tourCurrentSlide < tourSlides.length - 1) {
+          tourCurrentSlide++;
+          updateTourSlide();
+        } else {
+          closeTour();
+        }
+      }
+
+      function prevTourSlide() {
+        if (tourCurrentSlide > 0) {
+          tourCurrentSlide--;
+          updateTourSlide();
+        }
+      }
+
+      function updateTourSlide() {
+        const slide = tourSlides[tourCurrentSlide];
+
+        // Update body content
+        const body = document.getElementById("tour-body");
+        body.innerHTML = `
+          <div class="tour-step-indicator">${slide.indicator}</div>
+          <div class="tour-step-title">${slide.title}</div>
+          <div style="font-size: 13px; color: var(--fg-muted); line-height: 1.5;">${slide.content}</div>
+        `;
+
+        // Update dots
+        const dots = document.getElementById("tour-dots");
+        dots.innerHTML = "";
+        tourSlides.forEach((_, idx) => {
+          const dot = document.createElement("div");
+          dot.className = "tour-dot" + (idx === tourCurrentSlide ? " active" : "");
+          dot.onclick = () => {
+            tourCurrentSlide = idx;
+            updateTourSlide();
+          };
+          dot.style.cursor = "pointer";
+          dots.appendChild(dot);
+        });
+
+        // Update buttons
+        const prevBtn = document.getElementById("tour-prev");
+        const nextBtn = document.getElementById("tour-next");
+
+        prevBtn.style.visibility = tourCurrentSlide === 0 ? "hidden" : "visible";
+        nextBtn.innerText = tourCurrentSlide === tourSlides.length - 1 ? "Finish" : "Next";
+      }
+
       function boot() {
         if (!DATA || !DATA.order || DATA.order.length === 0) {
           document.getElementById("incident-room").classList.add("hidden");
@@ -2819,6 +3255,14 @@ Analyze incident alert context. Parse service snapshots, exception logs, deploys
         telemetryTimer = setInterval(tickTelemetry, 300);
         window.addEventListener("resize", drawTelemetryChart);
         setTimeout(drawTelemetryChart, 100);
+
+        // Auto-trigger tour on first load (using sessionStorage check so it doesn't annoy on every refresh)
+        if (!sessionStorage.getItem("war_room_tour_shown")) {
+          setTimeout(() => {
+            openTour();
+            sessionStorage.setItem("war_room_tour_shown", "true");
+          }, 1500);
+        }
       }
 
       boot();
